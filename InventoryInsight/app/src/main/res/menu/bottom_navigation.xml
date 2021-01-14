@@ -8,7 +8,7 @@
     <item
         android:id="@+id/menu_remove"
         android:title="@string/menu_remove"
-        android:icon="@drawable/bot_nav_addition" />
+        android:icon="@drawable/bot_nav_minus" />
 
     <item
         android:id="@+id/menu_search"

@@ -10,8 +10,8 @@
     <FrameLayout
         android:id="@+id/container"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_width="match_parent" >
+    </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationView"
@@ -26,6 +26,8 @@
         app:itemBackground="@color/design_default_color_primary"
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
-        app:menu="@menu/bottom_navigation"/>
+        app:menu="@menu/bottom_navigation"
+        app:labelVisibilityMode="labeled" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
