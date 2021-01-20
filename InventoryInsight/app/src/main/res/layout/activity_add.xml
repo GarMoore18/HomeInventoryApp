@@ -5,5 +5,78 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AddActivity">
+    <!--
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/upc_hint"
+        android:textSize="36sp"
+        tools:layout_editor_absoluteY="62dp" />-->
+
+    <!-- Barcode text field. -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/add_upc_field"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/barcode_hint"
+        app:startIconDrawable="@drawable/barcode_icon"
+        app:endIconMode="custom"
+        app:endIconDrawable="@drawable/barcode_scan_icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="12" />
+
+        <!-- Item name text field. -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/add_name_field"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/name_hint"
+            app:layout_constraintTop_toBottomOf="@+id/add_upc_field" >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+
+            <!-- Item quantity text field. -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/add_quantity_field"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/quantity_hint" >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="3" />
+
+                <!-- Item location text field. -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/add_location_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/location_hint" >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textAutoComplete" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <!-- End item location text field. -->
+
+            </com.google.android.material.textfield.TextInputLayout>
+            <!-- End item quantity text field. -->
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <!-- End item name text field. -->
+
+    </com.google.android.material.textfield.TextInputLayout>
+    <!-- End barcode text field. -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
