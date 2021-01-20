@@ -1,28 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/menu_add"
+        android:enabled="true"
         android:title="@string/menu_add"
-        android:icon="@drawable/bot_nav_add" />
+        android:icon="@drawable/bot_nav_add"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_remove"
+        android:enabled="true"
         android:title="@string/menu_remove"
-        android:icon="@drawable/bot_nav_minus" />
+        android:icon="@drawable/bot_nav_minus"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_search"
+        android:enabled="true"
         android:title="@string/menu_search"
-        android:icon="@drawable/bot_nav_search" />
+        android:icon="@drawable/bot_nav_search"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_settings"
+        android:enabled="true"
         android:title="@string/menu_settings"
-        android:icon="@drawable/bot_nav_settings" />
+        android:icon="@drawable/bot_nav_settings"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_contact"
+        android:enabled="true"
         android:title="@string/menu_contact"
-        android:icon="@drawable/bot_nav_contact" />
+        android:icon="@drawable/bot_nav_contact"
+        app:showAsAction="ifRoom" />
 
 </menu>
