@@ -1,82 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddActivity">
-    <!--
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/upc_hint"
-        android:textSize="36sp"
-        tools:layout_editor_absoluteY="62dp" />-->
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp" >
 
-    <!-- Barcode text field. -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/add_upc_field"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/add_screen_title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+
+        android:text="@string/add_screen_name"
+        android:textColor="@color/white"
+        android:textSize="35sp" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/upc_field"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/add_screen_title_text"
+        app:layout_constraintLeft_toLeftOf="parent"
+
+        android:ems="10"
+
+        android:inputType="number"
+        android:maxLength="12"
+
         android:hint="@string/barcode_hint"
-        app:startIconDrawable="@drawable/barcode_icon"
-        app:endIconMode="custom"
-        app:endIconDrawable="@drawable/barcode_scan_icon">
+        android:autofillHints="@string/barcode_autofill"
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:maxLength="12" />
+        android:drawableEnd="@drawable/barcode_scan_icon"
+        android:drawablePadding="5dp"
 
-        <!-- Item name text field. -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/add_name_field"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="@string/name_hint"
-            app:layout_constraintTop_toBottomOf="@+id/add_upc_field" >
+        android:textColorHint="@color/light_grey"
+        android:textColor="@color/white"
+        android:textSize="25sp"/>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/item_name_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/upc_field"
+        app:layout_constraintLeft_toLeftOf="parent"
 
-            <!-- Item quantity text field. -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/add_quantity_field"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/quantity_hint" >
+        android:ems="10"
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLength="3" />
+        android:inputType="textPersonName"
 
-                <!-- Item location text field. -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/add_location_field"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:hint="@string/location_hint" >
+        android:hint="@string/name_hint"
+        android:autofillHints="@string/name_autofill"
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textAutoComplete" />
+        android:textColorHint="@color/light_grey"
+        android:textColor="@color/white"
+        android:textSize="25sp" />
 
-                </com.google.android.material.textfield.TextInputLayout>
-                <!-- End item location text field. -->
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/quantity_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/item_name_field"
+        app:layout_constraintLeft_toLeftOf="parent"
 
-            </com.google.android.material.textfield.TextInputLayout>
-            <!-- End item quantity text field. -->
+        android:ems="10"
 
-        </com.google.android.material.textfield.TextInputLayout>
-        <!-- End item name text field. -->
+        android:inputType="number"
 
-    </com.google.android.material.textfield.TextInputLayout>
-    <!-- End barcode text field. -->
+        android:hint="@string/quantity_hint"
+        android:autofillHints="@string/quantity_autofill"
+
+        android:textColorHint="@color/light_grey"
+        android:textColor="@color/white"
+        android:textSize="25sp" />
+
+    <!-- TODO: Make this a dropdown field -->
+    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+        android:id="@+id/location_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/quantity_field"
+        app:layout_constraintLeft_toLeftOf="parent"
+
+        android:ems="10"
+
+        android:hint="@string/location_hint"
+
+        android:textColorHint="@color/light_grey"
+        android:textColor="@color/white"
+        android:textSize="25sp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/add_item_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:height="60dp"
+        android:text="@string/add_item_button_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

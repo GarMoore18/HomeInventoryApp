@@ -9,15 +9,25 @@
     <string name="menu_settings">Settings</string>
     <string name="menu_contact">Contact</string>
 
+    <!-- Screen titles -->
+    <string name="add_screen_name">Add item(s)</string>
+
     <!-- Text field hints. -->
     <string name="barcode_hint">Barcode</string>
     <string name="name_hint">Item Name</string>
     <string name="quantity_hint">Quantity</string>
     <string name="location_hint">Location</string>
 
+    <!-- Autofill field hints. -->
+    <string name="barcode_autofill">123412341234</string>
+    <string name="name_autofill">Beef Jerky</string>
+    <string name="quantity_autofill">100</string>
+    <string name="location_autofill">Basement Pantry</string>
+
     <!-- Icon labels. -->
     <string name="barcode_icon_label">Barcode</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_item_button_text">Add</string>
 </resources>
