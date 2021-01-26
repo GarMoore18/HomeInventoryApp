@@ -17,6 +17,13 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/menu_home"
+        android:enabled="true"
+        android:title="@string/menu_home"
+        android:icon="@drawable/bot_nav_home"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/menu_search"
         android:enabled="true"
         android:title="@string/menu_search"
@@ -28,13 +35,6 @@
         android:enabled="true"
         android:title="@string/menu_settings"
         android:icon="@drawable/bot_nav_settings"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/menu_contact"
-        android:enabled="true"
-        android:title="@string/menu_contact"
-        android:icon="@drawable/bot_nav_contact"
         app:showAsAction="ifRoom" />
 
 </menu>

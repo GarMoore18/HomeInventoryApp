@@ -13,10 +13,12 @@ public class AddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-        EditText barcodeET = findViewById(R.id.upc_field);
-        EditText nameET = findViewById(R.id.item_name_field);
-        EditText quantityET = findViewById(R.id.quantity_field);
-        EditText locationET = findViewById(R.id.location_field);
+        try {
+            this.getSupportActionBar().hide();
+        }
+        catch (NullPointerException e) {}
+
+        setContentView(R.layout.activity_add);
 
     }
 }
