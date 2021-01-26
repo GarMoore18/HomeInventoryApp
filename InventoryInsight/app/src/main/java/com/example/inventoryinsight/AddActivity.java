@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.widget.EditText;
 
+import java.util.Objects;
+
 public class AddActivity extends AppCompatActivity {
 
     @Override
@@ -13,10 +15,7 @@ public class AddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-        try {
-            this.getSupportActionBar().hide();
-        }
-        catch (NullPointerException e) {}
+        Objects.requireNonNull(this.getSupportActionBar()).hide();
 
         setContentView(R.layout.activity_add);
 

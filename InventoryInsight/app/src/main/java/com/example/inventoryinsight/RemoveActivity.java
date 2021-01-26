@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+import java.util.Objects;
+
 public class RemoveActivity extends AppCompatActivity {
 
     @Override
@@ -11,10 +13,7 @@ public class RemoveActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_remove);
 
-        try {
-            this.getSupportActionBar().hide();
-        }
-        catch (NullPointerException e) {}
+        Objects.requireNonNull(this.getSupportActionBar()).hide();
 
         setContentView(R.layout.activity_remove);
 
