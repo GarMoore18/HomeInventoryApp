@@ -4,29 +4,52 @@
     import androidx.appcompat.app.AppCompatActivity;
     import androidx.fragment.app.Fragment;
 
+    import android.content.Intent;
     import android.os.Bundle;
     import android.view.MenuItem;
+    import android.view.View;
+    import android.widget.Button;
+    import android.widget.ImageButton;
 
     import com.google.android.material.bottomnavigation.BottomNavigationView;
+    import com.google.android.material.textfield.TextInputEditText;
 
     import java.util.Objects;
 
     public class MainActivity extends AppCompatActivity
             implements BottomNavigationView.OnNavigationItemSelectedListener {
 
+        public static TextInputEditText upcField;
+        ImageButton scanImage;
+
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
 
+            //hide the name of the app
             Objects.requireNonNull(this.getSupportActionBar()).hide();
             setContentView(R.layout.activity_main);
 
+            //load the base fragment
             loadFragment(new HomeFragment());
 
+            //allows for navigation
             BottomNavigationView navigation = findViewById(R.id.navigation_view);
             navigation.setOnNavigationItemSelectedListener(this);
             navigation.setSelectedItemId(R.id.menu_home);   //sets the initial selected icon to home
+
+            //camera implementation
+            //TODO: NEEDS WORK BECAUSE THE SCANBARCODEIMAGE IS IN FRAGMENTS
+            /*
+            upcField = findViewById(R.id.upc_field);
+            scanImage = findViewById(R.id.scan_image_button);
+            scanImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getApplicationContext(), CameraActivity.class));
+                }
+            });
+             */
         }
 
         //Method for the navigation bar screen select
