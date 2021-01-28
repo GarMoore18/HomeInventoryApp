@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="blue_grey">#6699CC</color>
-    <color name="charcoal">#435058</color>
-    <color name="celeste">#9DFFF9</color>
+    <!--
+    <color name="light_blue">#89ABE3</color>
+    <color name="white">#FCF6F5</color>
+    <color name="space_cherry">#990011</color>
+    -->
+    <color name="light_blue">#89ABE3</color>
+    <color name="off_white">#FCF6F5</color>
+    <color name="celeste">#ADEFD1</color>
     <color name="light_grey">#A4A4A4</color>
 
     <color name="teal_200">#FF03DAC5</color>

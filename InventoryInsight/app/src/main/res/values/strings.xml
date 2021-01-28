@@ -10,13 +10,17 @@
     <string name="menu_home">Home</string>
 
     <!-- Screen titles -->
+    <string name="home_screen_text">Recents</string>
     <string name="add_screen_name">Add item(s)</string>
     <string name="remove_screen_name">Remove item(s)</string>
-
+    <string name="search_item_name">Search (Auto)</string>
+    <string name="search_item_manual">Search (Manual)</string>
+    <string name="settings_screen_name">Settings</string>
 
     <!-- Text field hints. -->
     <string name="barcode_hint">Barcode</string>
     <string name="name_hint">Item Name</string>
+    <string name="description_hint">Item Description</string>
     <string name="quantity_hint">Quantity</string>
     <string name="location_hint">Location</string>
 
@@ -26,9 +30,14 @@
     <string name="quantity_autofill">100</string>
     <string name="location_autofill">Basement Pantry</string>
 
+    <!-- Settings -->
+    <string name="dark_mode_setting">Enable dark mode</string>
+
     <!-- Icon labels. -->
     <string name="barcode_icon_label">Barcode</string>
 
     <!-- Buttons -->
     <string name="confirm_text">Confirm</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

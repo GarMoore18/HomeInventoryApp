@@ -1,49 +1,64 @@
-package com.example.inventoryinsight;
+    package com.example.inventoryinsight;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+    import androidx.annotation.NonNull;
+    import androidx.appcompat.app.AppCompatActivity;
+    import androidx.fragment.app.Fragment;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.widget.Toast;
+    import android.os.Bundle;
+    import android.view.MenuItem;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+    import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainActivity extends AppCompatActivity {
+    import java.util.Objects;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public class MainActivity extends AppCompatActivity
+            implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-        //Setting up the navigation for the bottom navigation bar
-        BottomNavigationView bottomNavigationView = findViewById(R.id.home_bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+
+            Objects.requireNonNull(this.getSupportActionBar()).hide();
+            setContentView(R.layout.activity_main);
+
+            loadFragment(new HomeFragment());
+
+            BottomNavigationView navigation = findViewById(R.id.navigation_view);
+            navigation.setOnNavigationItemSelectedListener(this);
+            navigation.setSelectedItemId(R.id.menu_home);   //sets the initial selected icon to home
+        }
+
+        //Method for the navigation bar screen select
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Fragment fragment = null;
+
             int itemId = item.getItemId();
 
             //Will navigate to correct activity based on selected destination
             if (itemId == R.id.menu_add) {
-                Toast.makeText(MainActivity.this, "ADDING", Toast.LENGTH_SHORT).show();
-                Intent intent_add = new Intent(getBaseContext(), AddActivity.class);
-                startActivity(intent_add);
+                fragment = new AddFragment();
             } else if (itemId == R.id.menu_remove) {
-                Toast.makeText(MainActivity.this, "REMOVING", Toast.LENGTH_SHORT).show();
-                Intent intent_remove = new Intent(getBaseContext(), RemoveActivity.class);
-                startActivity(intent_remove);
+                fragment = new RemoveFragment();
             } else if (itemId == R.id.menu_home) {
-                Toast.makeText(MainActivity.this, "YOUR ALREADY HOME!", Toast.LENGTH_SHORT).show();
+                fragment = new HomeFragment();
             } else if (itemId == R.id.menu_search) {
-                Toast.makeText(MainActivity.this, "SEARCHING", Toast.LENGTH_SHORT).show();
-                Intent intent_search = new Intent(getBaseContext(), SearchActivity.class);
-                startActivity(intent_search);
+                fragment = new SearchFragment();
             } else if (itemId == R.id.menu_settings) {
-                Toast.makeText(MainActivity.this, "SETTINGS", Toast.LENGTH_SHORT).show();
-                Intent intent_settings = new Intent(getBaseContext(), SettingsActivity.class);
-                startActivity(intent_settings);
+                fragment = new SettingsFragment();
             }
-            return true;
-        });
+            return loadFragment(fragment);
+        }
+
+        //Used to load the selected fragment
+        private boolean loadFragment(Fragment fragment) {
+            //switching fragment
+            if (fragment != null) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+                return true;
+            }
+            return false;
+        }
+
     }
-}
