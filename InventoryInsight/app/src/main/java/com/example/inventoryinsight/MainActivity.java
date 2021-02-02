@@ -1,6 +1,7 @@
     package com.example.inventoryinsight;
 
     import androidx.annotation.NonNull;
+    import androidx.annotation.Nullable;
     import androidx.appcompat.app.AppCompatActivity;
     import androidx.fragment.app.Fragment;
 
@@ -13,6 +14,7 @@
 
     import com.google.android.material.bottomnavigation.BottomNavigationView;
     import com.google.android.material.textfield.TextInputEditText;
+    import com.google.zxing.integration.android.IntentIntegrator;
 
     import java.util.Objects;
 
@@ -20,7 +22,6 @@
             implements BottomNavigationView.OnNavigationItemSelectedListener {
 
         public static TextInputEditText upcField;
-        ImageButton scanImage;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -38,18 +39,12 @@
             navigation.setOnNavigationItemSelectedListener(this);
             navigation.setSelectedItemId(R.id.menu_home);   //sets the initial selected icon to home
 
-            //camera implementation
-            //TODO: NEEDS WORK BECAUSE THE SCANBARCODEIMAGE IS IN FRAGMENTS
-            /*
-            upcField = findViewById(R.id.upc_field);
-            scanImage = findViewById(R.id.scan_image_button);
-            scanImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(getApplicationContext(), CameraActivity.class));
-                }
-            });
-             */
+        }
+
+        //Pass the result to the fragment
+        @Override
+        protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
         }
 
         //Method for the navigation bar screen select
