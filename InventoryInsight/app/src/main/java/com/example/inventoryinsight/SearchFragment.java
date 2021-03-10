@@ -1,6 +1,7 @@
 package com.example.inventoryinsight;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -20,10 +22,25 @@ import java.util.Objects;
 
 public class SearchFragment extends Fragment {
 
+    private TextInputEditText upc_field;
+    private Button confirm_button;
+    private String upc;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //Have to create the view first to use findViewByID in a fragment
         View v = inflater.inflate(R.layout.fragment_search, container, false);
+
+        ////////
+        upc_field = v.findViewById(R.id.upc_field);
+        confirm_button = v.findViewById(R.id.confirm_button);
+        confirm_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getData();
+            }
+        });
+        ////////
 
         //Used to load initiate the scanner when the image is clicked
         ImageButton scanButton = v.findViewById(R.id.scan_image_button);
@@ -37,6 +54,10 @@ public class SearchFragment extends Fragment {
         });
 
         return v;   //Returning the view for the fragment
+    }
+
+    public void getData() {
+        upc = upc_field.getText().toString();
     }
 
     @Override

@@ -12,6 +12,8 @@
     <!-- Screen titles -->
     <string name="home_screen_text">Recents</string>
     <string name="add_screen_name">Add item(s)</string>
+    <string name="add_screen_manual">New item</string>
+    <string name="add_screen_auto">Update item</string>
     <string name="remove_screen_name">Remove item(s)</string>
     <string name="search_item_name">Search (Auto)</string>
     <string name="search_item_manual">Search (Manual)</string>
@@ -38,7 +40,11 @@
 
     <!-- Buttons -->
     <string name="confirm_text">Confirm</string>
+    <string name="fill_text">Fill</string>
+
 
     <string name="hello_world">Hello Square World!</string>
     <string name="camera_activity_name">CameraActivity</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

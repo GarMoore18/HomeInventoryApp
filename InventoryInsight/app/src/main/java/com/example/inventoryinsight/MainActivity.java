@@ -23,6 +23,8 @@
 
         public static TextInputEditText upcField;
 
+        //Attempting to connect to mysql database
+
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
