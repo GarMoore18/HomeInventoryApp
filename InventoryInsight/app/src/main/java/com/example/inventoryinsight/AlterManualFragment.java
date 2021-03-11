@@ -10,8 +10,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -24,14 +27,24 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AlterManualFragment extends Fragment {
 
+    //================================================================================
+    // Database information
+    //================================================================================
     public static final String insert_URL = "http://10.0.0.184/InventoryDB/insert_item_info.php";
+    public static final String select_URL = "http://10.0.0.184/InventoryDB/select_possible_locations.php";
+
     private TextInputEditText upc_field, item_name_field, quantity_field;
-    private AutoCompleteTextView location_field;
+    private String select_location = "";
 
     public AlterManualFragment() {
     }
@@ -42,21 +55,101 @@ public class AlterManualFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.database_checked, container, false);
-        MaterialTextView manual_title = v.findViewById(R.id.add_screen_title_text);
-        manual_title.setText(getString(R.string.add_screen_manual));
 
-        TextInputEditText upc_field = v.findViewById(R.id.upc_field);
+        //================================================================================
+        // Items that need to be altered with preset information
+        //================================================================================
+        MaterialTextView manual_title = v.findViewById(R.id.add_screen_title_text);
+        upc_field = v.findViewById(R.id.upc_field);
+
+        //================================================================================
+        // Altering the items that need to be changed
+        //================================================================================
+        manual_title.setText(getString(R.string.add_screen_manual));
         Bundle bundle = this.getArguments();
         upc_field.setText(bundle.getString("barcode"));
         upc_field.setEnabled(false);
 
+        //================================================================================
+        // Items that need to be filled in by user
+        //================================================================================
         item_name_field = v.findViewById(R.id.item_name_field);
         quantity_field = v.findViewById(R.id.quantity_field);
 
+        //================================================================================
+        // Spinner for locations with location request from database
+        //================================================================================
+        ArrayList<Location> locations = new ArrayList<>();
+        LocationAdapter adapter = new LocationAdapter(getContext(), locations);
+        Spinner location_field = v.findViewById(R.id.location_field);
+        location_field.setAdapter(adapter);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, select_URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("Response", "Response:" + response);
+                JSONArray array_response = null;
+                try {
+                    array_response = new JSONArray(response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                locations.add(new Location(-1, "Select Location"));
+
+                // All of the items in the response need to be added to the locations array for the spinner
+                for (int i = 0; i < array_response.length(); i++) {
+                    try {
+                        JSONObject jsonObjectFromArray =
+                                array_response.getJSONObject(i);
+
+                        // Create location object for each location
+                        Location location = new Location(jsonObjectFromArray.getInt("id"),
+                                jsonObjectFromArray.getString("name"));
+
+                        locations.add(location);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                adapter.notifyDataSetChanged(); // The spinner needs to be refreshed with proper data
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("JSONArray Error", "Error:" + error);
+            }
+        });
+        // Add the request to the volley queue
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+
+        //================================================================================
+        // Collecting spinner data
+        //================================================================================
+        location_field.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent,
+                                               View view, int position, long id)
+                    {
+                        // It returns the clicked item.
+                        Location clickedItem = (Location) parent.getItemAtPosition(position);
+                        select_location = clickedItem.getLocation();
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent)
+                    {
+                    }
+                });
+
+        //================================================================================
+        // Submitting information for new item
+        //================================================================================
         Button confirm_button = v.findViewById(R.id.confirm_button);
         confirm_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,22 +158,36 @@ public class AlterManualFragment extends Fragment {
                 final String name = item_name_field.getText().toString().trim();
                 final String quantity = quantity_field.getText().toString().trim();
 
-                //ensure that required fields are filled
+                //================================================================================
+                // If required information is missing raise errors
+                //================================================================================
+                boolean missing_field = false;
+                // Required fields that the user must select
                 if (name.equals("")) {
                     item_name_field.setError("An item name is required!");
-                    return;
+                    missing_field = true;
                 }
                 if (quantity.equals("")) {
                     quantity_field.setError("An item quantity is required!");
+                    missing_field = true;
+                }
+                if (select_location.equals("Select Location")) {
+                    Toast.makeText(getContext(), "An item location is required!", Toast.LENGTH_LONG).show();
+                    missing_field = true;
+                }
+                if (missing_field) {
                     return;
                 }
 
-                //need to add the new item to item_info table first
+                //================================================================================
+                // Adding new item to the table of items
+                //================================================================================
                 StringRequest stringRequest = new StringRequest(Request.Method.POST, insert_URL, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d("Response", "Response:" + response);
                         if (response.equals("200")) {
+
                             Toast.makeText(getContext(), "Item added!", Toast.LENGTH_LONG).show();
 
                             // Create new fragment and transaction
@@ -107,6 +214,7 @@ public class AlterManualFragment extends Fragment {
                         Log.d("JSONArray Error", "Error:" + error);
                     }
                 }){
+                    // Items to be posted to the item_info table
                     @Override
                     protected Map<String, String> getParams()  {
                         Map<String, String> params = new HashMap<String, String>();

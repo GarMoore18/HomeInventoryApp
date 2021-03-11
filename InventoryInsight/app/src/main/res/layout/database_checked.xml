@@ -89,7 +89,7 @@
         android:textSize="25sp" />
 
     <!-- TODO: Make this a dropdown field -->
-    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+    <Spinner
         android:id="@+id/location_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

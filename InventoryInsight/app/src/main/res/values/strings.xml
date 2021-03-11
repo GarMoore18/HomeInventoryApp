@@ -42,6 +42,10 @@
     <string name="confirm_text">Confirm</string>
     <string name="fill_text">Fill</string>
 
+    <string-array name="locations">
+        <item>Down</item>
+        <item>Up</item>
+    </string-array>
 
     <string name="hello_world">Hello Square World!</string>
     <string name="camera_activity_name">CameraActivity</string>
