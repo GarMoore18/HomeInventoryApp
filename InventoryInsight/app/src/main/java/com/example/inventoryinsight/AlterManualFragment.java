@@ -40,19 +40,22 @@ public class AlterManualFragment extends Fragment {
     //================================================================================
     // Database information
     //================================================================================
-    public static final String insert_URL = "http://10.0.0.184/InventoryDB/insert_item_info.php";
-    public static final String select_URL = "http://10.0.0.184/InventoryDB/select_possible_locations.php";
+    public static final String insert_item_URL = "http://10.0.0.184/InventoryDB/insert_item_info.php";
+    public static final String select_item_URL = "http://10.0.0.184/InventoryDB/select_item_info.php";
+    public static final String insert_main_URL = "http://10.0.0.184/InventoryDB/insert_main.php";
+    public static final String select_locations_URL = "http://10.0.0.184/InventoryDB/select_possible_locations.php";
 
+    //================================================================================
+    // Layout information
+    //================================================================================
     private TextInputEditText upc_field, item_name_field, quantity_field;
-    private String select_location = "";
 
-    public AlterManualFragment() {
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    //================================================================================
+    // Variables for database
+    //================================================================================
+    private String location_id, select_location = "";
+    public Integer item;
+    public Item found_item;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,15 +90,15 @@ public class AlterManualFragment extends Fragment {
         Spinner location_field = v.findViewById(R.id.location_field);
         location_field.setAdapter(adapter);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, select_URL, new Response.Listener<String>() {
+        StringRequest stringRequestLocation = new StringRequest(Request.Method.GET, select_locations_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("Response", "Response:" + response);
+                Log.d("Response", "Response request locations:" + response);
+
                 JSONArray array_response = null;
                 try {
                     array_response = new JSONArray(response);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (JSONException ignored) {
                 }
 
                 locations.add(new Location(-1, "Select Location"));
@@ -126,7 +129,7 @@ public class AlterManualFragment extends Fragment {
         });
         // Add the request to the volley queue
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(stringRequest);
+        requestQueue.add(stringRequestLocation);
 
         //================================================================================
         // Collecting spinner data
@@ -137,15 +140,23 @@ public class AlterManualFragment extends Fragment {
                     public void onItemSelected(AdapterView<?> parent,
                                                View view, int position, long id)
                     {
-                        // It returns the clicked item.
+                        // It returns the clicked item
                         Location clickedItem = (Location) parent.getItemAtPosition(position);
                         select_location = clickedItem.getLocation();
+                        location_id = clickedItem.getId().toString();   // Used to add to combined table
                     }
                     @Override
-                    public void onNothingSelected(AdapterView<?> parent)
-                    {
+                    public void onNothingSelected(AdapterView<?> parent) {
                     }
                 });
+
+        //================================================================================
+        // There are a three requests made in a specific order to have the tables update
+        // Requests:
+        //      1. Add item to item_info table
+        //      2. Get that item information from item_info table
+        //      3. Add that item to the combined_info table
+        //================================================================================
 
         //================================================================================
         // Submitting information for new item
@@ -182,31 +193,95 @@ public class AlterManualFragment extends Fragment {
                 //================================================================================
                 // Adding new item to the table of items
                 //================================================================================
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, insert_URL, new Response.Listener<String>() {
+                StringRequest stringRequestInsert = new StringRequest(Request.Method.POST, insert_item_URL, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("Response", "Response:" + response);
-                        if (response.equals("200")) {
+                        Log.d("Response", "Response insert new item:" + response);
 
-                            Toast.makeText(getContext(), "Item added!", Toast.LENGTH_LONG).show();
+                        //================================================================================
+                        // Get id of item that was just added
+                        //================================================================================
+                        StringRequest stringRequestItem = new StringRequest(Request.Method.POST, select_item_URL, new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.d("Response", "Response request new item:" + response);
+                                try {
+                                    JSONArray array_response = new JSONArray(response);
+                                    JSONObject hit = array_response.getJSONObject(0);
+                                    found_item = new Item(hit.getInt("id"), hit.getString("barcode"), hit.getString("name"));
+                                    item = found_item.getId();
 
-                            // Create new fragment and transaction
-                            Fragment newFragment = new AddFragment();
-                            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                    adapter.notifyDataSetChanged(); // The spinner needs to be refreshed with proper data
+                                } catch (JSONException ignored) {
+                                }
 
-                            // Replace whatever is in the fragment_container view with this fragment,
-                            // and add the transaction to the back stack
-                            transaction.replace(R.id.fragment_container, newFragment);
+                                //================================================================================
+                                // Add item to main table with item id, location id, user id, quantity
+                                //================================================================================
+                                StringRequest stringRequestCombined = new StringRequest(Request.Method.POST, insert_main_URL, new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        Log.d("Response", "Response insert combined:" + response);
+                                        if (response.equals("200")) {
 
-                            //If a new item is added, do not let the user use the back button
-                            FragmentManager fm = getFragmentManager();
-                            fm.popBackStackImmediate(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                                            Toast.makeText(getContext(), "Item added!", Toast.LENGTH_LONG).show();
 
-                            // Commit the transaction
-                            transaction.commit();
-                        } else {
-                            Toast.makeText(getContext(), "Try adding item again!", Toast.LENGTH_LONG).show();
-                        }
+                                            // Create new fragment and transaction
+                                            Fragment newFragment = new AddFragment();
+                                            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+                                            // Replace whatever is in the fragment_container view with this fragment,
+                                            // and add the transaction to the back stack
+                                            transaction.replace(R.id.fragment_container, newFragment);
+
+                                            //If a new item is added, do not let the user use the back button
+                                            FragmentManager fm = getFragmentManager();
+                                            fm.popBackStackImmediate(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                                            // Commit the transaction
+                                            transaction.commit();
+                                        } else {
+                                            Toast.makeText(getContext(), "Try adding item again!", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Log.d("JSONArray Error", "Error:" + error);
+                                    }
+                                }){
+                                    // Items to be posted to the combined info  table
+                                    @Override
+                                    protected Map<String, String> getParams()  {
+                                        Map<String, String> params = new HashMap<String, String>();
+                                        params.put("item_id", item.toString());
+                                        params.put("location_id", location_id);
+                                        params.put("user_id", "1");   // TODO: WILL NEED TO STORE CORRECT USER
+                                        params.put("quantity", quantity);
+                                        return params;
+                                    }
+                                };
+                                //RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+                                requestQueue.add(stringRequestCombined);
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("JSONArray Error", "Error:" + error);
+                            }
+                        }){
+                            // Items to be posted to the item_info table
+                            @Override
+                            protected Map<String, String> getParams()  {
+                                Map<String, String> params = new HashMap<String, String>();
+                                params.put("barcode", barcode);
+                                return params;
+                            }
+                        };
+
+                        // Add the request to the volley queue
+                        //RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+                        requestQueue.add(stringRequestItem);
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -220,11 +295,12 @@ public class AlterManualFragment extends Fragment {
                         Map<String, String> params = new HashMap<String, String>();
                         params.put("barcode", barcode);
                         params.put("name", name);
+                        // TODO: WILL NEED TO PUT AN IMAGE HERE
                         return params;
                     }
                 };
                 RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-                requestQueue.add(stringRequest);
+                requestQueue.add(stringRequestInsert);
             }
         });
 

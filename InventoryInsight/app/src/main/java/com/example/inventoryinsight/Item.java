@@ -4,6 +4,7 @@ public class Item {
     private int id;
     private String barcode;
     private String name;
+    // TODO: WILL NEED TO HAVE AN IMAGE
 
     public Item(int id, String barcode, String name) {
         this.id = id;

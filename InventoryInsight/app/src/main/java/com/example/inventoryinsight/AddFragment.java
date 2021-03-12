@@ -34,6 +34,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +58,8 @@ public class AddFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //Have to create the view first to use findViewByID in a fragment
         View v = inflater.inflate(R.layout.fragment_add, container, false);
+
+        HttpsTrustManager.allowAllSSL();
 
         upc_field = v.findViewById(R.id.upc_field);
         Button fill_button = v.findViewById(R.id.fill_button);
