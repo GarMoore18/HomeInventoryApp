@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AddFragment extends Fragment {
 
-    public static final String select_URL = "http://10.0.0.184/InventoryDB/select_item_info.php";
+    public static final String select_URL = "http://10.0.0.184/InventoryDB/item_info/select_item_info.php";
 
     private TextInputEditText upc_field, item_name_field;
     public Item found_item;

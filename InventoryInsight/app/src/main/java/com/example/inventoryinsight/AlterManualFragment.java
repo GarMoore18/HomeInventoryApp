@@ -40,10 +40,10 @@ public class AlterManualFragment extends Fragment {
     //================================================================================
     // Database information
     //================================================================================
-    public static final String insert_item_URL = "http://10.0.0.184/InventoryDB/insert_item_info.php";
-    public static final String select_item_URL = "http://10.0.0.184/InventoryDB/select_item_info.php";
-    public static final String insert_main_URL = "http://10.0.0.184/InventoryDB/insert_main.php";
-    public static final String select_locations_URL = "http://10.0.0.184/InventoryDB/select_possible_locations.php";
+    public static final String insert_item_URL = "http://10.0.0.184/InventoryDB/item_info/insert_item_info.php";
+    public static final String select_item_URL = "http://10.0.0.184/InventoryDB/item_info/select_item_info.php";
+    public static final String insert_main_URL = "http://10.0.0.184/InventoryDB/combined_info/insert_combined_info.php";
+    public static final String select_locations_URL = "http://10.0.0.184/InventoryDB/possible_locations/select_possible_locations.php";
 
     //================================================================================
     // Layout information
@@ -165,6 +165,8 @@ public class AlterManualFragment extends Fragment {
         confirm_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                confirm_button.setEnabled(false);   // Disable button once attempt to add item has started
+
                 final String barcode = upc_field.getText().toString().trim();
                 final String name = item_name_field.getText().toString().trim();
                 final String quantity = quantity_field.getText().toString().trim();
@@ -187,6 +189,7 @@ public class AlterManualFragment extends Fragment {
                     missing_field = true;
                 }
                 if (missing_field) {
+                    confirm_button.setEnabled(true);   // Enable confirm button if item was not added
                     return;
                 }
 
@@ -242,6 +245,7 @@ public class AlterManualFragment extends Fragment {
                                             transaction.commit();
                                         } else {
                                             Toast.makeText(getContext(), "Try adding item again!", Toast.LENGTH_LONG).show();
+                                            confirm_button.setEnabled(true);   // Enable confirm button if item was not added
                                         }
                                     }
                                 }, new Response.ErrorListener() {
