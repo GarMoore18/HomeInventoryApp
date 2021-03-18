@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="img_height">80dp</dimen>
+    <dimen name="img_width">80dp</dimen>
+    <dimen name="activity_hori_mar">16dp</dimen>
+    <dimen name="activity_vert_mar">20dp</dimen>
+</resources>

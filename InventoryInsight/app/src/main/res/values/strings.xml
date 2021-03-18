@@ -12,8 +12,9 @@
     <!-- Screen titles -->
     <string name="home_screen_text">Recents</string>
     <string name="add_screen_name">Add item(s)</string>
-    <string name="add_screen_manual">New item</string>
-    <string name="add_screen_auto">Update item</string>
+    <string name="add_screen_manual">Add new item</string>
+    <string name="add_screen_auto">Add item quantity</string>
+    <string name="remove_screen_auto">Remove item quantity</string>
     <string name="remove_screen_name">Remove item(s)</string>
     <string name="search_item_name">Search (Auto)</string>
     <string name="search_item_manual">Search (Manual)</string>
@@ -42,10 +43,8 @@
     <string name="confirm_text">Confirm</string>
     <string name="fill_text">Fill</string>
 
-    <string-array name="locations">
-        <item>Down</item>
-        <item>Up</item>
-    </string-array>
+    <!-- Scroll View -->
+    <string name="upc_scroll">UPC: </string>
 
     <string name="hello_world">Hello Square World!</string>
     <string name="camera_activity_name">CameraActivity</string>

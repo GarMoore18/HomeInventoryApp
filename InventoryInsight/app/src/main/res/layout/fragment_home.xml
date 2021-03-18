@@ -19,4 +19,13 @@
         android:textColor="@color/black"
         android:textSize="35sp" />
 
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/home_screen_name"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:paddingBottom="50dp"
+        android:listSelector="@drawable/row_selector"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

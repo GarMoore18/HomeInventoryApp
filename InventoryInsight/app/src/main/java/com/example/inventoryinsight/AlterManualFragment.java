@@ -303,7 +303,6 @@ public class AlterManualFragment extends Fragment {
                         return params;
                     }
                 };
-                RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
                 requestQueue.add(stringRequestInsert);
             }
         });
