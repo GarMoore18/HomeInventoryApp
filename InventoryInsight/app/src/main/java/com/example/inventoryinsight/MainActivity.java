@@ -5,6 +5,8 @@
     import androidx.appcompat.app.AppCompatActivity;
     import androidx.fragment.app.Fragment;
 
+    import android.app.AlertDialog;
+    import android.content.DialogInterface;
     import android.content.Intent;
     import android.os.Bundle;
     import android.view.MenuItem;
@@ -79,6 +81,24 @@
                 return true;
             }
             return false;
+        }
+
+        //================================================================================
+        // Creates a dialog for when request is unsuccessful
+        //================================================================================
+        public void volleyRequestError() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+            builder.setCancelable(false);
+            builder.setTitle("Request Unsuccessful");
+            builder.setMessage("Things to do:\n\tSubmit again\n\tCheck internet connection\n\tCheck server status\n\tContact Garrett");
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.show();
         }
 
     }

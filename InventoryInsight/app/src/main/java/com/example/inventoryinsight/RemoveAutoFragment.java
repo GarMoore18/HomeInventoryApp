@@ -1,40 +1,54 @@
 package com.example.inventoryinsight;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.text.InputFilter;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RemoveAutoFragment extends Fragment {
 
-    //================================================================================
-    // Database information
-    //================================================================================
-    public static final String select_locations_URL = "http://10.0.0.184/InventoryDB/possible_locations/select_possible_locations.php";
-    public static final String update_combined_URL = "http://10.0.0.184/InventoryDB/combined_info/update_combined_info.php";
+    public static final String remove_quantity = "http://10.0.0.184/InventoryDB/use/remove_quantity.php";
 
-    //================================================================================
-    // Layout information
-    //================================================================================
     private TextInputEditText upc_field, item_name_field, quantity_field;
+    private MaterialTextView update_title;
 
-    //================================================================================
-    // Variables for database
-    //================================================================================
     private String location_id, select_location = "";;
     public int item, passed_id;
+    private Spinner location_field;
+    private int max_quan, row_id;
+    private Button confirm_button;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,42 +61,42 @@ public class RemoveAutoFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.database_checked, container, false);
 
-        //================================================================================
-        // Items that need to be altered with preset information
-        //================================================================================
-        MaterialTextView update_title = v.findViewById(R.id.add_screen_title_text);
+        update_title = v.findViewById(R.id.add_screen_title_text);
         upc_field = v.findViewById(R.id.upc_field);
         item_name_field = v.findViewById(R.id.item_name_field);
+        quantity_field = v.findViewById(R.id.quantity_field);
+        location_field = v.findViewById(R.id.location_field);
+        confirm_button = v.findViewById(R.id.confirm_button);
 
-        //================================================================================
-        // Altering the items that need to be changed
-        //================================================================================
+        setKnownInfo();  // Sets info that can be preset
+
+        locationSpinner();  // Spinner set and ItemListener
+
+        confirm_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeRequest();
+                }
+        });
+
+        return v;
+    }
+
+    private void setKnownInfo () {
         Bundle bundle = this.getArguments();
         update_title.setText(getString(R.string.remove_screen_auto));
         upc_field.setText(bundle.getString("item_barcode"));
         item_name_field.setText(bundle.getString("item_name"));
         passed_id = bundle.getInt("item_id");
-        Log.d("This should be an id: ", String.valueOf(passed_id));
         upc_field.setEnabled(false);
         item_name_field.setEnabled(false);
+    }
 
-        //================================================================================
-        // Items that need to be filled in by user
-        //================================================================================
-        quantity_field = v.findViewById(R.id.quantity_field);
-
-        //================================================================================
-        // Spinner for locations with location request from database
-        //================================================================================
+    private void locationSpinner() {
         ArrayList<Location> locations = (ArrayList<Location>)getArguments().getSerializable("found_locations");
         LocationAdapter adapter = new LocationAdapter(getContext(), locations);
-        Spinner location_field = v.findViewById(R.id.location_field);
         location_field.setAdapter(adapter);
-        //adapter.notifyDataSetChanged(); // The spinner needs to be refreshed with proper data
 
-        //================================================================================
-        // Collecting spinner data
-        //================================================================================
         location_field.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -90,17 +104,81 @@ public class RemoveAutoFragment extends Fragment {
                                                View view, int position, long id)
                     {
                         // It returns the clicked item
-                        Location clickedItem = (Location) parent.getItemAtPosition(position);
-                        select_location = clickedItem.getLocation();
-                        location_id = clickedItem.getId().toString();   // Used to add to combined table
-                        Toast.makeText(getActivity(), "Selected item" + clickedItem, Toast.LENGTH_SHORT).show();
+                        Location clickedItem = (Location)parent.getItemAtPosition(position);
+                        int curr_position = parent.getSelectedItemPosition();
 
+                        select_location = clickedItem.getLocation();
+                        location_id = clickedItem.getId().toString();
+
+                        ArrayList<CombinedTable> combined= (ArrayList<CombinedTable>)getArguments().getSerializable("found_combined");
+
+                        if (curr_position != 0) {
+                            CombinedTable current_item = combined.get(parent.getSelectedItemPosition());
+                            max_quan = current_item.getQuantity();
+                            row_id = current_item.getId();
+
+                            quantity_field.setEnabled(true);
+                            quantity_field.requestFocus();
+                            quantity_field.setError("Quantity must be " + max_quan + " or less.");
+                            quantity_field.setFilters(new InputFilter[]{ new InputFilterMinMax("1", String.valueOf(max_quan))});
+                        } else {
+                            max_quan = 0;
+                            quantity_field.setError("Select location first.");
+                            quantity_field.setEnabled(false);
+                        }
                     }
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {
                     }
                 });
-
-        return v;
     }
+
+
+    private void makeRequest() {
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        int new_quan = Integer.parseInt(quantity_field.getText().toString().trim()) - max_quan;
+
+        // Create JSON object to POST to database
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id", row_id);
+            jsonObject.put("user_id", 1);   // TODO: WILL NEED TO STORE CORRECT USER
+            jsonObject.put("quantity", new_quan);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Custom request to POST a JSONObject and Receive a JSONArray
+        CustomRequest jsonObjReq = new CustomRequest(Request.Method.POST, remove_quantity, jsonObject,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        moveToRemoveFragment();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                ((MainActivity)getActivity()).volleyRequestError();
+                Log.d("eeeeeeeee", String.valueOf(error));
+            }
+        });
+        requestQueue.add(jsonObjReq);   // Add request to queue
+    }
+
+    private void moveToRemoveFragment () {
+        // Create new fragment and transaction
+        Fragment newFragment = new RemoveAutoFragment();
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
 }

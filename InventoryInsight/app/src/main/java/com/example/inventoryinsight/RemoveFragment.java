@@ -1,5 +1,7 @@
 package com.example.inventoryinsight;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -32,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,13 +42,12 @@ import java.util.Objects;
 
 public class RemoveFragment extends Fragment {
 
-    public static final String select_URL = "http://10.0.0.184/InventoryDB/item_info/select_item_info.php";
-    public static final String select_locations_URL = "http://10.0.0.184/InventoryDB/possible_locations/select_possible_locations.php";
-    public static final String find_item_correspoding_locations = "http://10.0.0.184/InventoryDB/joined/remove_item_combined_info.php";
-
-
-    private TextInputEditText upc_field, item_name_field;
-    public Item found_item;
+    public static final String remove_item_check = "http://10.0.0.184/InventoryDB/use/check_remove_possible.php";
+    
+    private TextInputEditText upc_field;
+    private Button fill_button;
+    private Item found_item;
+    private String barcode;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -54,230 +56,179 @@ public class RemoveFragment extends Fragment {
         HttpsTrustManager.allowAllSSL();
 
         upc_field = v.findViewById(R.id.upc_field);
-        Button fill_button = v.findViewById(R.id.fill_button);
+        fill_button = v.findViewById(R.id.fill_button);
+
         fill_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String barcode = upc_field.getText().toString().trim();
-                RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+                barcode = upc_field.getText().toString().trim();
 
                 //Will only enter if an EAN13 barcode is entered
-                if (barcode.length() == 13) {
-                    /*StringRequest stringRequest = new StringRequest(Request.Method.POST, select_URL, new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.d("Response", "Response:" + response);
-                            try {
-                                //converting the string to json array object
-                                JSONArray array_response = new JSONArray(response);
-                                JSONObject hit = array_response.getJSONObject(0);
-                                found_item = new Item(hit.getInt("id"), hit.getString("barcode"), hit.getString("name"));
-
-                                //================================================================================
-                                // Spinner for locations with location request from database
-                                //================================================================================
-                                ArrayList<Location> locations = new ArrayList<>();
-
-                                StringRequest stringRequestLocation = new StringRequest(Request.Method.GET, select_locations_URL, new Response.Listener<String>() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        Log.d("Response", "Response request locations:" + response);
-
-                                        JSONArray array_response = null;
-                                        try {
-                                            array_response = new JSONArray(response);
-                                        } catch (JSONException ignored) {
-                                        }
-
-                                        locations.add(new Location(-1, "Select Location"));
-
-                                        // All of the items in the response need to be added to the locations array for the spinner
-                                        for (int i = 0; i < array_response.length(); i++) {
-                                            try {
-                                                JSONObject jsonObjectFromArray =
-                                                        array_response.getJSONObject(i);
-
-                                                // Create location object for each location
-                                                Location location = new Location(jsonObjectFromArray.getInt("id"),
-                                                        jsonObjectFromArray.getString("name"));
-
-                                                locations.add(location);
-
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-
-                                        //Create bundle to pass data
-                                        Bundle bundle = new Bundle();
-                                        bundle.putInt("item_id", found_item.getId());
-                                        bundle.putString("item_barcode", found_item.getBarcode());
-                                        bundle.putString("item_name", found_item.getName());
-                                        bundle.putSerializable("found_locations", locations);
-
-                                        // Create new fragment and transaction
-                                        Fragment newFragment = new RemoveAutoFragment();
-                                        newFragment.setArguments(bundle);   //Arguments to pass to new fragment
-                                        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-                                        // Replace whatever is in the fragment_container view with this fragment,
-                                        // and add the transaction to the back stack
-                                        transaction.replace(R.id.fragment_container, newFragment);
-                                        transaction.addToBackStack(null);
-
-                                        // Commit the transaction
-                                        transaction.commit();
-                                    }
-                                }, new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        Log.d("JSONArray Error", "Error:" + error);
-                                    }
-                                }){
-                                    @Override
-                                    protected Map<String, String> getParams()  {
-                                        Map<String, String> params = new HashMap<String, String>();
-                                        params.put("barcode", barcode);
-                                        return params;
-                                    }
-                                };
-                                requestQueue.add(stringRequestLocation);
-
-                            } catch (JSONException e) {
-                                Toast.makeText(getContext(), "Item must be added!", Toast.LENGTH_LONG).show();
-
-                                //Create bundle to pass data
-                                Bundle bundle = new Bundle();
-                                bundle.putString("barcode", upc_field.getText().toString());
-
-                                // Create new fragment and transaction
-                                Fragment newFragment = new AlterManualFragment();
-                                newFragment.setArguments(bundle);   //Arguments to pass to new fragment
-                                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-                                // Replace whatever is in the fragment_container view with this fragment,
-                                // and add the transaction to the back stack
-                                transaction.replace(R.id.fragment_container, newFragment);
-                                transaction.addToBackStack(null);
-
-                                // Commit the transaction
-                                transaction.commit();
-                            }
-
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.d("JSONArray Error", "Error:" + error);
-                        }
-                    }){
-                        @Override
-                        protected Map<String, String> getParams()  {
-                            Map<String, String> params = new HashMap<String, String>();
-                            params.put("barcode", barcode);
-                            return params;
-                        }
-                    };
-                    requestQueue.add(stringRequest);*/
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, find_item_correspoding_locations, new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.d("Response", "Response:" + response);
-                            try {
-                                //converting the string to json array object
-                                JSONArray array_response = new JSONArray(response);
-                                JSONObject hit = array_response.getJSONObject(0);
-                                found_item = new Item(hit.getInt("iid"), barcode, hit.getString("iname"));
-
-                                //================================================================================
-                                // Spinner for locations with location request from database
-                                //================================================================================
-                                ArrayList<Location> locations = new ArrayList<>();
-
-                                locations.add(new Location(-1, "Select Location"));
-
-                                // All of the items in the response need to be added to the locations array for the spinner
-                                for (int i = 0; i < array_response.length(); i++) {
-                                    try {
-                                        JSONObject jsonObjectFromArray =
-                                                array_response.getJSONObject(i);
-
-                                        // Create location object for each location
-                                        Location location = new Location(jsonObjectFromArray.getInt("lid"),
-                                                jsonObjectFromArray.getString("lname"));
-
-                                        locations.add(location);
-
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                                //Create bundle to pass data
-                                Bundle bundle = new Bundle();
-                                bundle.putInt("item_id", found_item.getId());
-                                bundle.putString("item_barcode", found_item.getBarcode());
-                                bundle.putString("item_name", found_item.getName());
-                                bundle.putSerializable("found_locations", locations);
-
-                                // Create new fragment and transaction
-                                Fragment newFragment = new RemoveAutoFragment();
-                                newFragment.setArguments(bundle);   //Arguments to pass to new fragment
-                                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-                                // Replace whatever is in the fragment_container view with this fragment,
-                                // and add the transaction to the back stack
-                                transaction.replace(R.id.fragment_container, newFragment);
-                                transaction.addToBackStack(null);
-
-                                // Commit the transaction
-                                transaction.commit();
-
-                            } catch (JSONException e) {
-                                Toast.makeText(getContext(), "Item must be added!", Toast.LENGTH_LONG).show();
-
-                                //Create bundle to pass data
-                                Bundle bundle = new Bundle();
-                                bundle.putString("barcode", upc_field.getText().toString());
-
-                                // Create new fragment and transaction
-                                Fragment newFragment = new AlterManualFragment();
-                                newFragment.setArguments(bundle);   //Arguments to pass to new fragment
-                                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-                                // Replace whatever is in the fragment_container view with this fragment,
-                                // and add the transaction to the back stack
-                                transaction.replace(R.id.fragment_container, newFragment);
-                                transaction.addToBackStack(null);
-
-                                // Commit the transaction
-                                transaction.commit();
-                            }
-
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.d("JSONArray Error", "Error:" + error);
-                        }
-                    }){
-                        @Override
-                        protected Map<String, String> getParams()  {
-                            Map<String, String> params = new HashMap<String, String>();
-                            params.put("barcode", barcode);
-                            return params;
-                        }
-                    };
-                    requestQueue.add(stringRequest);
-
+                if (barcode.length() == 12 || barcode.length() == 13) {
+                    makeRequest();
                 } else {
-                    Toast.makeText(getContext(), "Please enter a EAN13 barcode.", Toast.LENGTH_LONG).show();
+                    invalidBarcodeDialog();
                 }
             }
         });
 
-        //Used to load initiate the scanner when the image is clicked
-        ImageButton scanButton = v.findViewById(R.id.scan_image_button);
+        cameraScanEvent(v.findViewById(R.id.scan_image_button)); // Call to load camera for scanning
+
+        return v;   //Returning the view for the fragment
+    }
+
+    //================================================================================
+    // Creates a dialog for when the barcode is invalid
+    //================================================================================
+    private void invalidBarcodeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setCancelable(false);
+        builder.setTitle("Invalid Barcode");
+        builder.setMessage("The barcode must be a EAN13 or UPC");
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+    }
+
+    //================================================================================
+    // Requests information from database
+    //================================================================================
+    private void makeRequest() {
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        // Create JSON object to POST to database
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("barcode", barcode);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Custom request to POST a JSONObject and Receive a JSONArray
+        CustomRequest jsonObjReq = new CustomRequest(Request.Method.POST, remove_item_check, jsonObject,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            // Check for at least one item
+                            JSONObject hit = response.getJSONObject(0);
+                            found_item = new Item(hit.getInt("iid"), barcode, hit.getString("iname"));
+
+                            Object[] quan_locate = locations_quantities(response);
+                            ArrayList<Location> locations = (ArrayList<Location>)quan_locate[0]; // Locations where item is stored
+                            ArrayList<CombinedTable> combined = (ArrayList<CombinedTable>)quan_locate[1];
+
+                            moveToRemoveScreen(found_item, locations, combined);  // Change fragment to the remove screen
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            moveToAddScreen();   // Change fragment to the add screen
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                ((MainActivity)getActivity()).volleyRequestError();
+            }
+        });
+        requestQueue.add(jsonObjReq);   // Add request to queue
+    }
+
+    //================================================================================
+    // Creates an array of locations for the item
+    //================================================================================
+    private Object[] locations_quantities (JSONArray response) throws JSONException {
+        ArrayList<Location> locations = new ArrayList<>();
+        locations.add(new Location(-1, "Select Location"));
+
+        ArrayList<CombinedTable> combinedTables = new ArrayList<>();
+        combinedTables.add(new CombinedTable(-1, -1, -1, -1, -1));
+
+        // All of the items in the response need to be added to the locations array for the spinner
+        for (int i = 0; i < response.length(); i++) {
+            JSONObject jsonObjectFromArray =
+                    response.getJSONObject(i);
+
+            // Create location object for each location
+            Location location = new Location(jsonObjectFromArray.getInt("lid"),
+                    jsonObjectFromArray.getString("lname"));
+
+            CombinedTable combinedTable = new CombinedTable(jsonObjectFromArray.getInt("cid"),
+                    jsonObjectFromArray.getInt("iid"), jsonObjectFromArray.getInt("lid"),
+                    jsonObjectFromArray.getInt("user_id"), jsonObjectFromArray.getInt("quantity"));
+
+            locations.add(location);
+            combinedTables.add(combinedTable);
+        }
+
+        Object[] arrayObjects = new Object[2];
+        arrayObjects[0] = locations;
+        arrayObjects[1] = combinedTables;
+        return arrayObjects;
+
+        //return locations;
+    }
+
+    //================================================================================
+    // Passes information in bundle and commits moving to RemovingAutoFragment
+    //================================================================================
+    private void moveToRemoveScreen (Item found_item, ArrayList<Location> locations, ArrayList<CombinedTable> combined) {
+        //Create bundle to pass data
+        Bundle bundle = new Bundle();
+        bundle.putInt("item_id", found_item.getId());
+        bundle.putString("item_barcode", found_item.getBarcode());
+        bundle.putString("item_name", found_item.getName());
+        //TODO: PASS CORRECT QUANTITIES SOMEHOW
+        //TODO: WILL NEED TO PASS THE IMAGE AS WELL
+        bundle.putSerializable("found_locations", locations);
+        bundle.putSerializable("found_combined", combined);
+
+        // Create new fragment and transaction
+        Fragment newFragment = new RemoveAutoFragment();
+        commitToFragment(newFragment, bundle);
+    }
+
+    //================================================================================
+    // Passes information in bundle and commits moving to AlterManualFragment
+    //================================================================================
+    private void moveToAddScreen() {
+        Toast.makeText(getContext(), "Item must be added!", Toast.LENGTH_LONG).show();
+
+        //Create bundle to pass data
+        Bundle bundle = new Bundle();
+        bundle.putString("barcode", barcode);
+
+        // Create new fragment and transaction
+        Fragment newFragment = new AlterManualFragment();
+        commitToFragment(newFragment, bundle);
+    }
+
+    //================================================================================
+    // Duplicate part of committing a fragment change
+    //================================================================================
+    private void commitToFragment (Fragment newFragment, Bundle bundle) {
+        newFragment.setArguments(bundle);   //Arguments to pass to new fragment
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
+    //================================================================================
+    // Loads the camera for scanning barcode
+    //================================================================================
+    private void cameraScanEvent(ImageButton scanButton) {
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -286,11 +237,11 @@ public class RemoveFragment extends Fragment {
                 barcodeIntegrate.initiateScan();
             }
         });
-
-        return v;   //Returning the view for the fragment
     }
 
-    @Override
+    //================================================================================
+    // Changes barcode field to barcode taken with camera
+    //================================================================================    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(result != null) {
