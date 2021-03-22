@@ -4,6 +4,7 @@
     import androidx.annotation.Nullable;
     import androidx.appcompat.app.AppCompatActivity;
     import androidx.fragment.app.Fragment;
+    import androidx.fragment.app.FragmentManager;
 
     import android.app.AlertDialog;
     import android.content.DialogInterface;
@@ -99,6 +100,12 @@
                 }
             });
             builder.show();
+        }
+
+        public void disableBack() {
+            // This will not allow the user to return to previous screen once moving fragment
+            FragmentManager fm = MainActivity.this.getSupportFragmentManager();
+            fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
 
     }

@@ -53,6 +53,7 @@ public class RemoveFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //Have to create the view first to use findViewByID in a fragment
         View v = inflater.inflate(R.layout.fragment_remove, container, false);
+
         HttpsTrustManager.allowAllSSL();
 
         upc_field = v.findViewById(R.id.upc_field);
@@ -125,6 +126,7 @@ public class RemoveFragment extends Fragment {
 
                             moveToRemoveScreen(found_item, locations, combined);  // Change fragment to the remove screen
 
+                            Log.d("CHECK REMOVE", String.valueOf(response));
                         } catch (JSONException e) {
                             e.printStackTrace();
                             moveToAddScreen();   // Change fragment to the add screen
@@ -195,10 +197,28 @@ public class RemoveFragment extends Fragment {
     }
 
     //================================================================================
+    // Creates a dialog for when there is not an item in the database
+    //================================================================================
+    private void addItemDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setCancelable(false);
+        builder.setTitle("Item must be added!");
+        builder.setMessage("There are not any items in the database that match that barcode.");
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+    }
+
+    //================================================================================
     // Passes information in bundle and commits moving to AlterManualFragment
     //================================================================================
     private void moveToAddScreen() {
-        Toast.makeText(getContext(), "Item must be added!", Toast.LENGTH_LONG).show();
+        addItemDialog();
 
         //Create bundle to pass data
         Bundle bundle = new Bundle();

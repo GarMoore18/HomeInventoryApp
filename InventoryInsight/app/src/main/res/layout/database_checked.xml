@@ -41,17 +41,6 @@
         android:textColor="@color/black"
         android:textSize="25sp" />
 
-    <ImageButton
-        android:id="@+id/scan_image_button"
-        android:layout_width="50dp"
-        android:layout_height="0dp"
-        android:scaleType="fitCenter"
-        app:srcCompat="@drawable/barcode_scan_icon"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_screen_title_text"
-        app:layout_constraintBottom_toBottomOf="@+id/upc_field"
-        android:background="?attr/selectableItemBackgroundBorderless" />
-
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/item_name_field"
         android:layout_width="match_parent"

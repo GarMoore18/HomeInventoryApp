@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -42,22 +43,13 @@ public class RemoveAutoFragment extends Fragment {
 
     private TextInputEditText upc_field, item_name_field, quantity_field;
     private MaterialTextView update_title;
-
-    private String location_id, select_location = "";;
     public int item, passed_id;
     private Spinner location_field;
     private int max_quan, row_id;
     private Button confirm_button;
 
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.database_checked, container, false);
 
@@ -75,13 +67,16 @@ public class RemoveAutoFragment extends Fragment {
         confirm_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                makeRequest();
+                makeRequest();  // Volley request when confirm is selected
                 }
         });
 
         return v;
     }
 
+    //================================================================================
+    // Sets text fields that need a preset value
+    //================================================================================
     private void setKnownInfo () {
         Bundle bundle = this.getArguments();
         update_title.setText(getString(R.string.remove_screen_auto));
@@ -92,6 +87,10 @@ public class RemoveAutoFragment extends Fragment {
         item_name_field.setEnabled(false);
     }
 
+    //================================================================================
+    // Correctly populates spinner and ensures that location is picked before a
+    // a quantity is able to be entered
+    //================================================================================
     private void locationSpinner() {
         ArrayList<Location> locations = (ArrayList<Location>)getArguments().getSerializable("found_locations");
         LocationAdapter adapter = new LocationAdapter(getContext(), locations);
@@ -104,23 +103,22 @@ public class RemoveAutoFragment extends Fragment {
                                                View view, int position, long id)
                     {
                         // It returns the clicked item
-                        Location clickedItem = (Location)parent.getItemAtPosition(position);
                         int curr_position = parent.getSelectedItemPosition();
-
-                        select_location = clickedItem.getLocation();
-                        location_id = clickedItem.getId().toString();
 
                         ArrayList<CombinedTable> combined= (ArrayList<CombinedTable>)getArguments().getSerializable("found_combined");
 
                         if (curr_position != 0) {
                             CombinedTable current_item = combined.get(parent.getSelectedItemPosition());
                             max_quan = current_item.getQuantity();
+
+                            //TODO: POPUP WHEN MAX_QUAN IS 0, ASK USER IF WANT TO ADD ITEM (OK MOVES TO ADD SCREEN)
+
                             row_id = current_item.getId();
 
                             quantity_field.setEnabled(true);
                             quantity_field.requestFocus();
                             quantity_field.setError("Quantity must be " + max_quan + " or less.");
-                            quantity_field.setFilters(new InputFilter[]{ new InputFilterMinMax("1", String.valueOf(max_quan))});
+                            quantity_field.setFilters(new InputFilter[]{ new InputFilterMinMax("0", String.valueOf(max_quan))});
                         } else {
                             max_quan = 0;
                             quantity_field.setError("Select location first.");
@@ -133,18 +131,21 @@ public class RemoveAutoFragment extends Fragment {
                 });
     }
 
-
+    //================================================================================
+    // Requests information from database
+    //================================================================================
     private void makeRequest() {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
 
-        int new_quan = Integer.parseInt(quantity_field.getText().toString().trim()) - max_quan;
+        int new_quan = max_quan - Integer.parseInt(quantity_field.getText().toString().trim());
 
         // Create JSON object to POST to database
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("id", row_id);
-            jsonObject.put("user_id", 1);   // TODO: WILL NEED TO STORE CORRECT USER
-            jsonObject.put("quantity", new_quan);
+            jsonObject.put("id", String.valueOf(row_id));
+            jsonObject.put("user_id", "1");   // TODO: WILL NEED TO STORE CORRECT USER
+            jsonObject.put("quantity", String.valueOf(new_quan));
+            Log.d("JSONObject", String.valueOf(jsonObject));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -159,23 +160,33 @@ public class RemoveAutoFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                ((MainActivity)getActivity()).volleyRequestError();
-                Log.d("eeeeeeeee", String.valueOf(error));
+                // Will catch the parse error since an array response is not needed
+                if (error instanceof ParseError) {
+                    moveToRemoveFragment();
+                } else {
+                    ((MainActivity)getActivity()).volleyRequestError();
+                    Log.d("eeeeeeeee", String.valueOf(error));
+                }
             }
         });
         requestQueue.add(jsonObjReq);   // Add request to queue
     }
 
+    //================================================================================
+    // Transitions back to remove fragment
+    //================================================================================
     private void moveToRemoveFragment () {
         // Create new fragment and transaction
-        Fragment newFragment = new RemoveAutoFragment();
+        Fragment newFragment = new RemoveFragment();
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack
         transaction.replace(R.id.fragment_container, newFragment);
-        transaction.addToBackStack(null);
+
+        // Do not allow the user to return to previous screen once moving fragment
+        ((MainActivity)getActivity()).disableBack();
 
         // Commit the transaction
         transaction.commit();
