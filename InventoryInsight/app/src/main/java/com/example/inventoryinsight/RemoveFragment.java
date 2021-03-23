@@ -68,7 +68,7 @@ public class RemoveFragment extends Fragment {
                 if (barcode.length() == 12 || barcode.length() == 13) {
                     makeRequest();
                 } else {
-                    invalidBarcodeDialog();
+                    ((MainActivity)getActivity()).invalidBarcodeDialog();
                 }
             }
         });
@@ -76,24 +76,6 @@ public class RemoveFragment extends Fragment {
         cameraScanEvent(v.findViewById(R.id.scan_image_button)); // Call to load camera for scanning
 
         return v;   //Returning the view for the fragment
-    }
-
-    //================================================================================
-    // Creates a dialog for when the barcode is invalid
-    //================================================================================
-    private void invalidBarcodeDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-        builder.setCancelable(false);
-        builder.setTitle("Invalid Barcode");
-        builder.setMessage("The barcode must be a EAN13 or UPC");
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        builder.show();
     }
 
     //================================================================================

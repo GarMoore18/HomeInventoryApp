@@ -205,7 +205,7 @@ public class AlterAutoFragment extends Fragment {
 
                             //If a new item is added, do not let the user use the back button
                             FragmentManager fm = getFragmentManager();
-                            fm.popBackStackImmediate(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                            ((MainActivity)getActivity()).disableBack();
 
                             // Commit the transaction
                             transaction.commit();

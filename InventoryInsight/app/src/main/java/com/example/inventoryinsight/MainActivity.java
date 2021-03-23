@@ -7,6 +7,7 @@
     import androidx.fragment.app.FragmentManager;
 
     import android.app.AlertDialog;
+    import android.app.FragmentTransaction;
     import android.content.DialogInterface;
     import android.content.Intent;
     import android.os.Bundle;
@@ -102,6 +103,25 @@
             builder.show();
         }
 
+        //================================================================================
+        // Creates a dialog for when the barcode is invalid
+        //================================================================================
+        public void invalidBarcodeDialog() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+            builder.setCancelable(false);
+            builder.setTitle("Invalid Barcode");
+            builder.setMessage("The barcode must be a EAN13 or UPC");
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.show();
+        }
+
+        // TODO: IN PROGRESS
         public void disableBack() {
             // This will not allow the user to return to previous screen once moving fragment
             FragmentManager fm = MainActivity.this.getSupportFragmentManager();
