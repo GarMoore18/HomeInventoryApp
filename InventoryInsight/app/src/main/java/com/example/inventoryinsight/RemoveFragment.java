@@ -88,6 +88,7 @@ public class RemoveFragment extends Fragment {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("barcode", barcode);
+            Log.d("JSONObject", String.valueOf(jsonObject));
         } catch (JSONException e) {
             e.printStackTrace();
         }

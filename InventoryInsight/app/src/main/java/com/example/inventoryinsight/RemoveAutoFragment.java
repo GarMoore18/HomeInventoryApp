@@ -119,6 +119,7 @@ public class RemoveAutoFragment extends Fragment {
                             quantity_field.requestFocus();
                             quantity_field.setError("Quantity must be " + max_quan + " or less.");
                             quantity_field.setFilters(new InputFilter[]{ new InputFilterMinMax("0", String.valueOf(max_quan))});
+
                         } else {
                             max_quan = 0;
                             quantity_field.setError("Select location first.");
@@ -155,18 +156,26 @@ public class RemoveAutoFragment extends Fragment {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        moveToRemoveFragment();
+                        // Check for at least one item
+                        try {
+                            // Get the response code for the update
+                            JSONObject connect = response.getJSONObject(0);
+
+                            // Only move the fragment if the update was successful
+                            if (connect.getInt("result_code") == 200) {
+                                moveToRemoveFragment();
+                            } else {
+                                ((MainActivity)getActivity()).volleyRequestError();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // Will catch the parse error since an array response is not needed
-                if (error instanceof ParseError) {
-                    moveToRemoveFragment();
-                } else {
-                    ((MainActivity)getActivity()).volleyRequestError();
-                    Log.d("eeeeeeeee", String.valueOf(error));
-                }
+                ((MainActivity)getActivity()).volleyRequestError();
+                //Log.d("eeeeeeeee", String.valueOf(error));
             }
         });
         requestQueue.add(jsonObjReq);   // Add request to queue

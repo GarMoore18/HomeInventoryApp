@@ -37,7 +37,6 @@ public class AlterAutoFragment extends Fragment {
     //================================================================================
     // Database information
     //================================================================================
-    public static final String select_locations_URL = "http://10.0.0.184/InventoryDB/possible_locations/select_possible_locations.php";
     public static final String update_combined_URL = "http://10.0.0.184/InventoryDB/combined_info/update_combined_info.php";
 
     //================================================================================
@@ -48,7 +47,9 @@ public class AlterAutoFragment extends Fragment {
     //================================================================================
     // Variables for database
     //================================================================================
-    private String location_id, select_location = "";;
+    private String location_id, select_location = "";
+    private Spinner location_field;
+    private Location clickedItem;
     public int item, passed_id;
 
     @Override
@@ -90,70 +91,9 @@ public class AlterAutoFragment extends Fragment {
         //================================================================================
         // Spinner for locations with location request from database
         //================================================================================
-        ArrayList<Location> locations = new ArrayList<>();
-        LocationAdapter adapter = new LocationAdapter(getContext(), locations);
-        Spinner location_field = v.findViewById(R.id.location_field);
-        location_field.setAdapter(adapter);
+        location_field = v.findViewById(R.id.location_field);
 
-        StringRequest stringRequestLocation = new StringRequest(Request.Method.GET, select_locations_URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("Response", "Response request locations:" + response);
-
-                JSONArray array_response = null;
-                try {
-                    array_response = new JSONArray(response);
-                } catch (JSONException ignored) {
-                }
-
-                locations.add(new Location(-1, "Select Location"));
-
-                // All of the items in the response need to be added to the locations array for the spinner
-                for (int i = 0; i < array_response.length(); i++) {
-                    try {
-                        JSONObject jsonObjectFromArray =
-                                array_response.getJSONObject(i);
-
-                        // Create location object for each location
-                        Location location = new Location(jsonObjectFromArray.getInt("id"),
-                                jsonObjectFromArray.getString("name"));
-
-                        locations.add(location);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                adapter.notifyDataSetChanged(); // The spinner needs to be refreshed with proper data
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("JSONArray Error", "Error:" + error);
-            }
-        });
-        // Add the request to the volley queue
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(stringRequestLocation);
-
-        //================================================================================
-        // Collecting spinner data
-        //================================================================================
-        location_field.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                                               View view, int position, long id)
-                    {
-                        // It returns the clicked item
-                        Location clickedItem = (Location) parent.getItemAtPosition(position);
-                        select_location = clickedItem.getLocation();
-                        location_id = clickedItem.getId().toString();   // Used to add to combined table
-                    }
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                    }
-                });
+        locationSpinner();
 
         //================================================================================
         // Submitting information for new item
@@ -238,4 +178,32 @@ public class AlterAutoFragment extends Fragment {
 
         return v;
     }
+
+    //================================================================================
+    // Correctly populates spinner
+    //================================================================================
+    private void locationSpinner() {
+        ArrayList<Location> locations = new ArrayList<>();
+        LocationAdapter adapter = new LocationAdapter(getContext(), locations);
+        location_field.setAdapter(adapter);
+
+        ((MainActivity)getActivity()).locationSpinnerRequest(locations, adapter);
+
+        location_field.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent,
+                                               View view, int position, long id)
+                    {
+                        // It returns the clicked item
+                        clickedItem = (Location) parent.getItemAtPosition(position);
+                        select_location = clickedItem.getLocation();
+                        location_id = clickedItem.getId().toString();   // Used to add to combined table
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+    }
+
 }
