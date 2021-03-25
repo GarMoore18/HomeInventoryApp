@@ -42,7 +42,7 @@ import java.util.Objects;
 
 public class RemoveFragment extends Fragment {
 
-    public static final String remove_item_check = "http://10.0.0.184/InventoryDB/use/check_remove_possible.php";
+    public static final String remove_item_check = "http://10.0.0.184/InventoryDB/RemoveFragPHP/check_remove_possible.php";
     
     private TextInputEditText upc_field;
     private Button fill_button;

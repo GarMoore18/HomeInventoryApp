@@ -39,7 +39,7 @@ import java.util.Map;
 
 public class RemoveAutoFragment extends Fragment {
 
-    public static final String remove_quantity = "http://10.0.0.184/InventoryDB/use/remove_quantity.php";
+    public static final String remove_quantity = "http://10.0.0.184/InventoryDB/RemoveAutoFragPHP/remove_quantity.php";
 
     private TextInputEditText upc_field, item_name_field, quantity_field;
     private MaterialTextView update_title;
@@ -174,8 +174,8 @@ public class RemoveAutoFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                ((MainActivity)getActivity()).volleyRequestError();
-                //Log.d("eeeeeeeee", String.valueOf(error));
+                //((MainActivity)getActivity()).volleyRequestError();
+                Log.d("eeeeeeeee", String.valueOf(error));
             }
         });
         requestQueue.add(jsonObjReq);   // Add request to queue

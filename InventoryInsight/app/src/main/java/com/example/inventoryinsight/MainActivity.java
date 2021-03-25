@@ -39,7 +39,7 @@
     public class MainActivity extends AppCompatActivity
             implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-        public static final String select_locations_URL = "http://10.0.0.184/InventoryDB/possible_locations/select_possible_locations.php";
+        public static final String select_locations_URL = "http://10.0.0.184/InventoryDB/MainActPHP/select_possible_locations.php";
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {

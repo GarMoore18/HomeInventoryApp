@@ -39,7 +39,7 @@ import java.util.Objects;
 
 public class SearchFragment extends Fragment {
 
-    public static final String search_auto_url = "http://10.0.0.184/InventoryDB/use/search_auto.php";
+    public static final String search_auto_url = "http://10.0.0.184/InventoryDB/SearchFragPHP/search_auto.php";
 
     private TextInputEditText upc_field, item_name_field, quantity_field;
     private Spinner location_field;

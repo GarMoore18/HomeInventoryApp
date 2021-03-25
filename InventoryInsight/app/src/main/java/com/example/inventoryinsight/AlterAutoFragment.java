@@ -34,29 +34,15 @@ import java.util.Map;
 
 public class AlterAutoFragment extends Fragment {
 
-    //================================================================================
-    // Database information
-    //================================================================================
-    public static final String update_combined_URL = "http://10.0.0.184/InventoryDB/combined_info/update_combined_info.php";
+    public static final String add_quantity = "http://10.0.0.184/InventoryDB/AddAutoFragPHP/add_quantity.php";
 
-    //================================================================================
-    // Layout information
-    //================================================================================
     private TextInputEditText upc_field, item_name_field, quantity_field;
-
-    //================================================================================
-    // Variables for database
-    //================================================================================
-    private String location_id, select_location = "";
+    private MaterialTextView update_title;
+    private String quantity, location_id, select_location = "";
     private Spinner location_field;
     private Location clickedItem;
+    private Button confirm_button;
     public int item, passed_id;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,119 +50,131 @@ public class AlterAutoFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.database_checked, container, false);
 
-        //================================================================================
-        // Items that need to be altered with preset information
-        //================================================================================
-        MaterialTextView update_title = v.findViewById(R.id.add_screen_title_text);
+        update_title = v.findViewById(R.id.add_screen_title_text);
         upc_field = v.findViewById(R.id.upc_field);
         item_name_field = v.findViewById(R.id.item_name_field);
 
-        //================================================================================
-        // Altering the items that need to be changed
-        //================================================================================
+        // Information passed from add fragment
         Bundle bundle = this.getArguments();
         update_title.setText(getString(R.string.add_screen_auto));
         upc_field.setText(bundle.getString("item_barcode"));
         item_name_field.setText(bundle.getString("item_name"));
         passed_id = bundle.getInt("item_id");
-        Log.d("This should be an id: ", String.valueOf(passed_id));
+
+        // Disable these fields since the item exists
         upc_field.setEnabled(false);
         item_name_field.setEnabled(false);
 
-        //================================================================================
-        // Items that need to be filled in by user
-        //================================================================================
-        quantity_field = v.findViewById(R.id.quantity_field);
-
-        //================================================================================
-        // Spinner for locations with location request from database
-        //================================================================================
         location_field = v.findViewById(R.id.location_field);
+        locationSpinner();  // Set spinner information
 
-        locationSpinner();
-
-        //================================================================================
-        // Submitting information for new item
-        //================================================================================
-        Button confirm_button = v.findViewById(R.id.confirm_button);
+        confirm_button = v.findViewById(R.id.confirm_button);
         confirm_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                confirm_button.setEnabled(false);   // Disable button once attempt to add item has started
+                quantity = quantity_field.getText().toString().trim();
 
-                final String quantity = quantity_field.getText().toString().trim();
-
-                //================================================================================
-                // If required information is missing raise errors
-                //================================================================================
-                boolean missing_field = false;
-                // Required fields that the user must select
-                if (quantity.equals("")) {
-                    quantity_field.setError("An item quantity is required!");
-                    missing_field = true;
-                }
-                if (select_location.equals("Select Location")) {
-                    Toast.makeText(getContext(), "An item location is required!", Toast.LENGTH_LONG).show();
-                    missing_field = true;
-                }
-                if (missing_field) {
-                    confirm_button.setEnabled(true);   // Enable confirm button if item was not added
+                // Some required fields are missing
+                if (checkMissingFields()) {
                     return;
                 }
-
-                //================================================================================
-                // Add/update row in main table with item id, location id, user id, quantity
-                //================================================================================
-                StringRequest stringRequestCombined = new StringRequest(Request.Method.POST, update_combined_URL, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("Response", "Response insert combined:" + response);
-                        if (response.equals("U200") || response.equals("I200")) {
-
-                            Toast.makeText(getContext(), "Item updated!", Toast.LENGTH_LONG).show();
-
-                            // Create new fragment and transaction
-                            Fragment newFragment = new AddFragment();
-                            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-                            // Replace whatever is in the fragment_container view with this fragment,
-                            // and add the transaction to the back stack
-                            transaction.replace(R.id.fragment_container, newFragment);
-
-                            //If a new item is added, do not let the user use the back button
-                            FragmentManager fm = getFragmentManager();
-                            ((MainActivity)getActivity()).disableBack();
-
-                            // Commit the transaction
-                            transaction.commit();
-                        } else {
-                            Toast.makeText(getContext(), "Try updating item again!", Toast.LENGTH_LONG).show();
-                            confirm_button.setEnabled(true);   // Enable confirm button if item was not added
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("JSONArray Error", "Error:" + error);
-                    }
-                }){
-                    // Items to be posted to the combined info  table
-                    @Override
-                    protected Map<String, String> getParams()  {
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("item_id", String.valueOf(passed_id));
-                        params.put("location_id", location_id);
-                        params.put("user_id", "1");   // TODO: WILL NEED TO STORE CORRECT USER
-                        params.put("quantity", quantity);
-                        return params;
-                    }
-                };
-                RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-                requestQueue.add(stringRequestCombined);
+                makeRequest();  // Request to database
             }
         });
 
         return v;
+    }
+
+    //================================================================================
+    // Raises errors for missing fields and returns true if fields are empty
+    //================================================================================
+    private boolean checkMissingFields() {
+        confirm_button.setEnabled(false);   // Disable button once attempt to add item has started
+
+        boolean missing_field = false;
+        // Required fields that the user must select
+        if (quantity.equals("")) {
+            quantity_field.setError("An item quantity is required!");
+            missing_field = true;
+        }
+        if (select_location.equals("Select Location")) {
+            Toast.makeText(getContext(), "An item location is required!", Toast.LENGTH_LONG).show();
+            missing_field = true;
+        }
+        if (missing_field) {
+            confirm_button.setEnabled(true);   // Enable confirm button if item was not added
+        }
+        return missing_field;
+    }
+
+    //================================================================================
+    // Moves back to the add screen
+    //================================================================================
+    private void moveToAddFragment() {
+        // Create new fragment and transaction
+        Fragment newFragment = new AddFragment();
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack
+        transaction.replace(R.id.fragment_container, newFragment);
+
+        // Do not allow the user to return to previous screen once moving fragment
+        ((MainActivity)getActivity()).disableBack();
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
+    //================================================================================
+    // Requests information from database
+    //================================================================================
+    private void makeRequest() {
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        // Create JSON object to POST to database
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("iid", String.valueOf(passed_id));
+            jsonObject.put("user_id", "1");   // TODO: WILL NEED TO STORE CORRECT USER
+            jsonObject.put("quantity", quantity_field.getText().toString().trim());
+            jsonObject.put("location_id", location_id);
+            //Log.d("JSONObject", String.valueOf(jsonObject));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Custom request to POST a JSONObject and Receive a JSONArray
+        CustomRequest jsonObjReq = new CustomRequest(Request.Method.POST, add_quantity, jsonObject,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        // Check for at least one item
+                        try {
+                            Log.d("TETETE", String.valueOf(response));
+                            // Get the response code for the update
+                            JSONObject connect = response.getJSONObject(0);
+
+                            // Only move the fragment if the update was successful
+                            if (connect.getInt("result_code") == 20 || connect.getInt("result_code") == 200) {
+                                moveToAddFragment();
+                            } else {
+                                ((MainActivity)getActivity()).volleyRequestError();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                ((MainActivity)getActivity()).volleyRequestError();
+                confirm_button.setEnabled(true);
+                Log.d("eeeeeeeee", String.valueOf(error));
+            }
+        });
+        requestQueue.add(jsonObjReq);   // Add request to queue
     }
 
     //================================================================================

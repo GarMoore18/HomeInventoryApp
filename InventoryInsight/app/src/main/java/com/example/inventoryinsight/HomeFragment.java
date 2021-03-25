@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
 
-    public static final String combined_URL = "http://10.0.0.184/InventoryDB/joined/select_recent_joined.php";
+    public static final String combined_URL = "http://10.0.0.184/InventoryDB/HomeFragPHP/select_recent_joined.php";
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -66,7 +66,7 @@ public class HomeFragment extends Fragment {
                         }
 
                         adapter.notifyDataSetChanged();
-                        //Log.d("JSONArray Response", "Items pulled: " + arrayOfRecents.size());
+                        Log.d("JSONArray Response", "Items pulled: " + arrayOfRecents.size());
                     }
                 }, new Response.ErrorListener() {
             @Override

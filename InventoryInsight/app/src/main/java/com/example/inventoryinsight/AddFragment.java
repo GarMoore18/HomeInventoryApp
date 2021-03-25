@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AddFragment extends Fragment {
 
-    public static final String select_URL = "http://10.0.0.184/InventoryDB/item_info/select_item_info.php";
+    public static final String select_all_item_info = "http://10.0.0.184/InventoryDB/AddFragPHP/select_all_item_info.php";
 
     private TextInputEditText upc_field;
     private Button fill_button;
@@ -88,7 +88,7 @@ public class AddFragment extends Fragment {
     private void makeRequest() {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, select_URL, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, select_all_item_info, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Response", "Response:" + response);
