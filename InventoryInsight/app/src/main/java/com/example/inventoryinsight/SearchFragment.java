@@ -9,6 +9,8 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +19,10 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
@@ -40,15 +45,20 @@ import java.util.Objects;
 public class SearchFragment extends Fragment {
 
     public static final String search_auto_url = "http://10.0.0.184/InventoryDB/SearchFragPHP/search_auto.php";
+    public static final String search_manual_url = "http://10.0.0.184/InventoryDB/SearchFragPHP/search_manual.php";
 
     private TextInputEditText upc_field, item_name_field, quantity_field;
     private Spinner location_field;
     private Button confirm_button_auto, confirm_button_manual, to_auto_search, to_manual_search;
     private ConstraintLayout manual_field, auto_field;
     private ViewFlipper viewFlipper;
-    private String barcode, location_id, name = "", quantity = "", select_location = "";
+    private String barcode, location_id = "", name = "", quantity = "", select_location = "", filterName = "", operator = "";
     private ListView listView;
     private Location clickedItem;
+
+    private RadioGroup radioGroupQuan, radioGroupSelection;
+    private RadioButton more, less, equal, description, quan_rad, loca_rad, curr;
+    private final String moreText = "More than: ", lessText = "Less than: ", equalText = "Exactly: ";
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -61,6 +71,15 @@ public class SearchFragment extends Fragment {
         auto_field = v.findViewById(R.id.auto_field);
         to_auto_search = v.findViewById(R.id.to_auto_search);
         to_manual_search = v.findViewById(R.id.to_manual_search);
+
+        radioGroupQuan = v.findViewById(R.id.radio_group);
+        radioGroupSelection = v.findViewById(R.id.radio_group_start);
+        more = v.findViewById(R.id.more_than);
+        less = v.findViewById(R.id.less_than);
+        equal = v.findViewById(R.id.exactly);
+        description =v.findViewById(R.id.description_radio);
+        quan_rad = v.findViewById(R.id.quantity_radio);
+        loca_rad = v.findViewById(R.id.location_radio);
 
         // For the auto search
         upc_field = v.findViewById(R.id.upc_field);
@@ -112,10 +131,94 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        getStrings(v); //get the current radio button text
+
+        updateRadio();
+        radioGroupFilterListener(v);
+        radioGroupQuanListener();
+
         //Used to load initiate the scanner when the image is clicked
         cameraScanEvent(v.findViewById(R.id.scan_image_button));
 
         return v;   //Returning the view for the fragment
+    }
+
+    //================================================================================
+    // Gets current radio button filter text
+    //================================================================================
+    private void getStrings(View v) {
+        curr = v.findViewById(radioGroupSelection.getCheckedRadioButtonId());
+        filterName = (String) curr.getText();  // To decide how to SQL query
+    }
+
+    //================================================================================
+    // Sets field visibility based on radio button
+    //================================================================================
+    private void radioGroupFilterListener(View v) {
+        radioGroupSelection.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                getStrings(v);
+
+                if (description.isChecked()) {
+                    item_name_field.setVisibility(View.VISIBLE);
+                    quantity_field.setVisibility(View.GONE);
+                    radioGroupQuan.setVisibility(View.GONE);
+                    location_field.setVisibility(View.GONE);
+                } else if (quan_rad.isChecked()) {
+                    item_name_field.setVisibility(View.GONE);
+                    quantity_field.setVisibility(View.VISIBLE);
+                    radioGroupQuan.setVisibility(View.VISIBLE);
+                    location_field.setVisibility(View.GONE);
+                } else if (loca_rad.isChecked()) {
+                    item_name_field.setVisibility(View.GONE);
+                    quantity_field.setVisibility(View.GONE);
+                    radioGroupQuan.setVisibility(View.GONE);
+                    location_field.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    //================================================================================
+    // Sets field visibility based on radio button
+    //================================================================================
+    private void radioGroupQuanListener() {
+        radioGroupQuan.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                if (more.isChecked()) {
+                    operator = ">";
+                } else if (less.isChecked()) {
+                    operator = "<";
+                } else if (equal.isChecked()) {
+                    operator = "=";
+                }
+            }
+        });
+    }
+
+    //================================================================================
+    // Changes text for radio buttons of quantity
+    //================================================================================
+    private void updateRadio() {
+        quantity_field.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                more.setText(moreText + s);
+                less.setText(lessText + s);
+                equal.setText(equalText + s);
+            }
+        });
+
     }
 
     //================================================================================
@@ -205,7 +308,65 @@ public class SearchFragment extends Fragment {
     // Requests information from database for manual search
     //================================================================================
     private void manualMakeRequest() {
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
 
+        ArrayList<Recents> arrayOfHits = new ArrayList<>();
+        RecentsAdapter adapter = new RecentsAdapter(getActivity(), arrayOfHits);
+
+        listView.setAdapter(adapter);
+
+        // Create JSON object to POST to database
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("radio", filterName);
+            jsonObject.put("description", name);
+            jsonObject.put("quantity", quantity);
+            jsonObject.put("operator", operator);
+            jsonObject.put("location", location_id);
+            Log.d("JSON", String.valueOf(jsonObject));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Custom request to POST a JSONObject and Receive a JSONArray
+        CustomRequest jsonObjReq = new CustomRequest(Request.Method.POST, search_manual_url, jsonObject,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.d("GFRGADSRGARD", String.valueOf(response));
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+                                JSONObject jsonObjectFromArray =
+                                        response.getJSONObject(i);
+
+                                Recents recent = new Recents(jsonObjectFromArray.getString("barcode"),
+                                        jsonObjectFromArray.getString("iid"),
+                                        jsonObjectFromArray.getString("image"),
+                                        jsonObjectFromArray.getString("lid"),
+                                        jsonObjectFromArray.getString("username"),
+                                        jsonObjectFromArray.getString("quantity"),
+                                        jsonObjectFromArray.getString("last_modified"));
+
+                                arrayOfHits.add(recent);
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        //change page to the results page only if volley was successful
+                        //viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(v.findViewById(R.id.results_page)));
+                        viewFlipper.setDisplayedChild(2);
+                        adapter.notifyDataSetChanged();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                ((MainActivity)getActivity()).volleyRequestError();
+                Log.d("rrgsagr", String.valueOf(error));
+            }
+        });
+        requestQueue.add(jsonObjReq);   // Add request to queue
     }
 
     //================================================================================

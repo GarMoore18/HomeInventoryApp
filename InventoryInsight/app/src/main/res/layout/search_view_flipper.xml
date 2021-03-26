@@ -145,18 +145,55 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/toggle_buttons"
-            app:layout_constraintBottom_toTopOf="@+id/item_name_field"
+            app:layout_constraintBottom_toTopOf="@+id/radio_group_start"
             app:layout_constraintLeft_toLeftOf="parent"
 
             android:text="@string/search_item_manual"
             android:textColor="@color/black"
             android:textSize="35sp" />
 
+        <RadioGroup
+            android:id="@+id/radio_group_start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/search_manual_item_screen_text"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/description_radio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:checked="true"
+                android:text="Description"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/quantity_radio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:text="Quantity"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/location_radio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:text="Location"
+                android:textSize="20sp" />
+        </RadioGroup>
+
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/item_name_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/search_manual_item_screen_text"
+            app:layout_constraintTop_toBottomOf="@+id/radio_group_start"
             app:layout_constraintLeft_toLeftOf="parent"
 
             android:ems="10"
@@ -176,6 +213,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/item_name_field"
             app:layout_constraintLeft_toLeftOf="parent"
+            android:visibility="gone"
 
             android:ems="10"
 
@@ -188,13 +226,51 @@
             android:textColor="@color/black"
             android:textSize="25sp" />
 
+        <RadioGroup
+            android:id="@+id/radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/quantity_field"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <RadioButton
+                android:id="@+id/more_than"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:text="More than"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/less_than"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:text="Less than"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/exactly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:text="Exactly"
+                android:textSize="20sp" />
+        </RadioGroup>
+
         <!-- TODO: Make this a dropdown field -->
         <Spinner
             android:id="@+id/location_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/quantity_field"
+            app:layout_constraintTop_toBottomOf="@+id/radio_group"
             app:layout_constraintLeft_toLeftOf="parent"
+            android:visibility="gone"
 
             android:ems="10"
 
