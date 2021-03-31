@@ -269,7 +269,7 @@ public class SearchFragment extends Fragment {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        Log.d("GFRGADSRGARD", String.valueOf(response));
+                        //Log.d("GFRGADSRGARD", String.valueOf(response));
                         for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject jsonObjectFromArray =
@@ -333,7 +333,7 @@ public class SearchFragment extends Fragment {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        Log.d("GFRGADSRGARD", String.valueOf(response));
+                        //Log.d("GFRGADSRGARD", String.valueOf(response));
                         for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject jsonObjectFromArray =
@@ -374,7 +374,11 @@ public class SearchFragment extends Fragment {
     //================================================================================
     private boolean checkForField() {
         // At least one field must be filled
-        return (!name.equals("") || !quantity.equals("") || !select_location.equals("Select Location"));
+        Log.d("Description", String.valueOf(!name.equals("")));
+        Log.d("Quantity", String.valueOf(!quantity.equals("")));
+        Log.d("Location Value", String.valueOf(clickedItem));
+        Log.d("Location", String.valueOf(!select_location.equals("Select Location")));
+        return (!name.equals("") || !quantity.equals("") || (clickedItem != null & !select_location.equals("Select Location")));
     }
 
     //================================================================================
@@ -385,7 +389,7 @@ public class SearchFragment extends Fragment {
 
         builder.setCancelable(false);
         builder.setTitle("Enter Information");
-        builder.setMessage("Please provide information for at least one field.");
+        builder.setMessage("Please provide information for one field.");
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override

@@ -1,11 +1,16 @@
 package com.example.inventoryinsight;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +19,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -31,7 +38,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.sql.Blob;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,12 +49,17 @@ public class AlterManualFragment extends Fragment {
 
     public static final String add_quantity_manual = "http://10.0.0.184/InventoryDB/AddManFragPHP/add_quantity_manual.php";
 
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_IMAGE_CANCEL = 0;
+
+
     private TextInputEditText upc_field, item_name_field, quantity_field;
-    private String quantity, name, barcode, location_id, select_location = "";
+    private String quantity, name, barcode, location_id, select_location = "", encodedString;
     private MaterialTextView manual_title;
     private Spinner location_field;
     private Location clickedItem;
     private Button confirm_button;
+    private ImageButton img_but;
     public Integer item;
 
     @Override
@@ -60,6 +75,8 @@ public class AlterManualFragment extends Fragment {
         manual_title.setText(getString(R.string.add_screen_manual));
         upc_field.setText(bundle.getString("barcode"));
         upc_field.setEnabled(false);
+
+        img_but = v.findViewById(R.id.image_but);
 
         item_name_field = v.findViewById(R.id.item_name_field);
         quantity_field = v.findViewById(R.id.quantity_field);
@@ -82,6 +99,8 @@ public class AlterManualFragment extends Fragment {
             }
         });
 
+        captureImageButton();
+
         return v;
     }
 
@@ -96,6 +115,7 @@ public class AlterManualFragment extends Fragment {
         try {
             jsonObject.put("barcode", barcode);
             jsonObject.put("name", name);
+            jsonObject.put("image", encodedString);
             jsonObject.put("user_id", "1");   // TODO: WILL NEED TO STORE CORRECT USER
             jsonObject.put("quantity", quantity_field.getText().toString().trim());
             jsonObject.put("location_id", location_id);
@@ -203,5 +223,36 @@ public class AlterManualFragment extends Fragment {
                     public void onNothingSelected(AdapterView<?> parent) {
                     }
                 });
+    }
+
+    public void captureImageButton() {
+        img_but.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("IMAGES", "Image button clicked.");
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        });
+    }
+
+    public static String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality) {
+        ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
+        image.compress(compressFormat, quality, byteArrayOS);
+        return android.util.Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode != REQUEST_IMAGE_CANCEL) {
+            if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                    Bitmap takenImage = (Bitmap) data.getExtras().get("data");
+                    encodedString = encodeToBase64(takenImage, Bitmap.CompressFormat.PNG, 100);
+
+                    img_but.setAdjustViewBounds(true);
+                    img_but.setImageBitmap(takenImage);
+            }
+        }
     }
 }

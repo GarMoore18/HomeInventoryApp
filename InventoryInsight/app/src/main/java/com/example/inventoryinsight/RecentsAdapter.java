@@ -1,8 +1,12 @@
 package com.example.inventoryinsight;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +14,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.NetworkImageView;
+
+import java.io.ByteArrayInputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class RecentsAdapter extends BaseAdapter {
     private final Context context;
@@ -47,7 +56,15 @@ public class RecentsAdapter extends BaseAdapter {
         TextView quantity = convertView.findViewById(R.id.quantity);
 
         //Setting assets with correct information
-        item_image.setImageDrawable(context.getDrawable(R.drawable.ic_launcher_background)); // TODO: GET THE REAL IMAGE
+
+        //TODO: FIX TO NULL INSTEAD OF EMPTY STRING
+        if (!arrayList.get(position).getImage().equals("")) {
+            byte[] decodedByte = Base64.decode(arrayList.get(position).getImage(), 0);
+            Bitmap imgBitMap = BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+            item_image.setImageBitmap(imgBitMap);
+        } else {
+            item_image.setImageDrawable(context.getDrawable(R.drawable.no_image_icon)); // TODO: GET THE REAL IMAGE
+        }
         item_name.setText(arrayList.get(position).getName());
         item_barcode.setText(context.getString(R.string.upc_scroll) + arrayList.get(position).getBarcode());
         item_location.setText(arrayList.get(position).getLocation());
