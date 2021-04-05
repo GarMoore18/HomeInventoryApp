@@ -44,6 +44,7 @@ import java.util.Objects;
 
 public class SearchFragment extends Fragment {
 
+    //TODO: TEMP FIX FOR WHEN QUANTITY RADIO BUTTON IS NOT SELECTED
     public static final String search_auto_url = "http://10.0.0.184/InventoryDB/SearchFragPHP/search_auto.php";
     public static final String search_manual_url = "http://10.0.0.184/InventoryDB/SearchFragPHP/search_manual.php";
 
@@ -187,7 +188,7 @@ public class SearchFragment extends Fragment {
         radioGroupQuan.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-
+                //operator = "<>";
                 if (more.isChecked()) {
                     operator = ">";
                 } else if (less.isChecked()) {
@@ -269,7 +270,16 @@ public class SearchFragment extends Fragment {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        //Log.d("GFRGADSRGARD", String.valueOf(response));
+                        try {
+                            Log.d("HEYHO", String.valueOf(response));
+                            if (response.getJSONObject(0).getString("no_matches").equals("true")) {
+                                ((MainActivity)getActivity()).noSearchMatches();
+                                return;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                         for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject jsonObjectFromArray =
@@ -298,6 +308,7 @@ public class SearchFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d("eee", String.valueOf(error));
                 ((MainActivity)getActivity()).volleyRequestError();
             }
         });
@@ -333,6 +344,16 @@ public class SearchFragment extends Fragment {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+                        try {
+                            Log.d("HEYHO", String.valueOf(response));
+                            if (response.getJSONObject(0).getString("no_matches").equals("true")) {
+                                ((MainActivity)getActivity()).noSearchMatches();
+                                return;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                         //Log.d("GFRGADSRGARD", String.valueOf(response));
                         for (int i = 0; i < response.length(); i++) {
                             try {

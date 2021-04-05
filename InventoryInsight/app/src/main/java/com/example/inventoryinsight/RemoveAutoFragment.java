@@ -2,6 +2,8 @@ package com.example.inventoryinsight;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,12 +12,14 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.text.InputFilter;
 import android.text.InputType;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -47,6 +51,8 @@ public class RemoveAutoFragment extends Fragment {
     private Spinner location_field;
     private int max_quan, row_id;
     private Button confirm_button;
+    private ImageButton img_but;
+    private String passed_image;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,6 +65,7 @@ public class RemoveAutoFragment extends Fragment {
         quantity_field = v.findViewById(R.id.quantity_field);
         location_field = v.findViewById(R.id.location_field);
         confirm_button = v.findViewById(R.id.confirm_button);
+        img_but = v.findViewById(R.id.image_but);
 
         setKnownInfo();  // Sets info that can be preset
 
@@ -74,6 +81,17 @@ public class RemoveAutoFragment extends Fragment {
         return v;
     }
 
+    private void setCurrentImage() {
+        img_but.setAdjustViewBounds(true);
+        if (!passed_image.equals("")) {
+            byte[] decodedByte = Base64.decode(passed_image, 0);
+            Bitmap imgBitMap = BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+            img_but.setImageBitmap(imgBitMap);
+        } else {
+            img_but.setImageResource(R.drawable.no_image_icon); // TODO: GET THE REAL IMAGE
+        }
+    }
+
     //================================================================================
     // Sets text fields that need a preset value
     //================================================================================
@@ -83,6 +101,8 @@ public class RemoveAutoFragment extends Fragment {
         upc_field.setText(bundle.getString("item_barcode"));
         item_name_field.setText(bundle.getString("item_name"));
         passed_id = bundle.getInt("item_id");
+        passed_image = bundle.getString("image");
+        setCurrentImage();
         upc_field.setEnabled(false);
         item_name_field.setEnabled(false);
     }

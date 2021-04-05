@@ -146,6 +146,24 @@
         //================================================================================
         // Creates a dialog for when request is unsuccessful
         //================================================================================
+        public void noSearchMatches() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+            builder.setCancelable(false);
+            builder.setTitle("No Results");
+            builder.setMessage("There are not any items that match that search.");
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.show();
+        }
+
+        //================================================================================
+        // Creates a dialog for when request is unsuccessful
+        //================================================================================
         public void volleyRequestError() {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 

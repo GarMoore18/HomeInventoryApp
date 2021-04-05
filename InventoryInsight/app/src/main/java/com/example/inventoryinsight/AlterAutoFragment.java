@@ -1,17 +1,23 @@
 package com.example.inventoryinsight;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -38,10 +44,11 @@ public class AlterAutoFragment extends Fragment {
 
     private TextInputEditText upc_field, item_name_field, quantity_field;
     private MaterialTextView update_title;
-    private String quantity, location_id, select_location = "";
+    private String quantity, location_id, select_location = "", passed_image;
     private Spinner location_field;
     private Location clickedItem;
     private Button confirm_button;
+    private ImageButton img_but;
     public int item, passed_id;
 
     @Override
@@ -53,6 +60,7 @@ public class AlterAutoFragment extends Fragment {
         update_title = v.findViewById(R.id.add_screen_title_text);
         upc_field = v.findViewById(R.id.upc_field);
         item_name_field = v.findViewById(R.id.item_name_field);
+        img_but = v.findViewById(R.id.image_but);
 
         // Information passed from add fragment
         Bundle bundle = this.getArguments();
@@ -60,6 +68,8 @@ public class AlterAutoFragment extends Fragment {
         upc_field.setText(bundle.getString("item_barcode"));
         item_name_field.setText(bundle.getString("item_name"));
         passed_id = bundle.getInt("item_id");
+        passed_image = bundle.getString("image");
+        setCurrentImage();
 
         // Disable these fields since the item exists
         upc_field.setEnabled(false);
@@ -83,6 +93,17 @@ public class AlterAutoFragment extends Fragment {
         });
 
         return v;
+    }
+
+    private void setCurrentImage() {
+        img_but.setAdjustViewBounds(true);
+        if (!passed_image.equals("")) {
+            byte[] decodedByte = Base64.decode(passed_image, 0);
+            Bitmap imgBitMap = BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+            img_but.setImageBitmap(imgBitMap);
+        } else {
+            img_but.setImageResource(R.drawable.no_image_icon); // TODO: GET THE REAL IMAGE
+        }
     }
 
     //================================================================================

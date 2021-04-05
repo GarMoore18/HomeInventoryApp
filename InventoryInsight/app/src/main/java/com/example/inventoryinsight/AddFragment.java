@@ -96,7 +96,7 @@ public class AddFragment extends Fragment {
                     //converting the string to json array object
                     JSONArray array_response = new JSONArray(response);
                     JSONObject hit = array_response.getJSONObject(0);
-                    found_item = new Item(hit.getInt("id"), hit.getString("barcode"), hit.getString("name"));
+                    found_item = new Item(hit.getInt("id"), hit.getString("barcode"), hit.getString("name"), hit.getString("image"));
 
                     moveToAlterAutoScreen(found_item);
 
@@ -130,6 +130,7 @@ public class AddFragment extends Fragment {
         bundle.putInt("item_id", found_item.getId());
         bundle.putString("item_barcode", found_item.getBarcode());
         bundle.putString("item_name", found_item.getName());
+        bundle.putString("image", found_item.getImage());
 
         // Create new fragment and transaction
         Fragment newFragment = new AlterAutoFragment();

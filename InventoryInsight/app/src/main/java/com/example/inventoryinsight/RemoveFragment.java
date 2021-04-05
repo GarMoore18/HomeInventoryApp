@@ -99,9 +99,19 @@ public class RemoveFragment extends Fragment {
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
+                            Log.d("HEYHO", String.valueOf(response));
+                            if (response.getJSONObject(0).getString("no_matches").equals("true")) {
+                                ((MainActivity)getActivity()).noSearchMatches();
+                                return;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        try {
                             // Check for at least one item
                             JSONObject hit = response.getJSONObject(0);
-                            found_item = new Item(hit.getInt("iid"), barcode, hit.getString("iname"));
+                            found_item = new Item(hit.getInt("iid"), barcode, hit.getString("iname"), hit.getString("image"));
 
                             Object[] quan_locate = locations_quantities(response);
                             ArrayList<Location> locations = (ArrayList<Location>)quan_locate[0]; // Locations where item is stored
@@ -119,6 +129,7 @@ public class RemoveFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d("TESTINGREMOVEERROR", String.valueOf(error));
                 ((MainActivity)getActivity()).volleyRequestError();
             }
         });
@@ -169,8 +180,7 @@ public class RemoveFragment extends Fragment {
         bundle.putInt("item_id", found_item.getId());
         bundle.putString("item_barcode", found_item.getBarcode());
         bundle.putString("item_name", found_item.getName());
-        //TODO: PASS CORRECT QUANTITIES SOMEHOW
-        //TODO: WILL NEED TO PASS THE IMAGE AS WELL
+        bundle.putString("image", found_item.getImage());
         bundle.putSerializable("found_locations", locations);
         bundle.putSerializable("found_combined", combined);
 
