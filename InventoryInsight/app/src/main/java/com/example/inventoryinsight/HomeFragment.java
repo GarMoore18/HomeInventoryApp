@@ -71,7 +71,8 @@ public class HomeFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                ((MainActivity)getActivity()).volleyRequestError();
+                //((MainActivity)getActivity()).volleyRequestError();
+                Log.d("ErrorHey", String.valueOf(error));
             }
         });
         requestQueue.add(jsonArrayRequest);   //Add request to the queue

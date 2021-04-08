@@ -189,7 +189,7 @@
                 android:textSize="20sp" />
         </RadioGroup>
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/item_name_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

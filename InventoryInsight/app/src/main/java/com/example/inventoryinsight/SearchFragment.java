@@ -3,6 +3,8 @@ package com.example.inventoryinsight;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -13,9 +15,13 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -40,6 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class SearchFragment extends Fragment {
@@ -48,7 +55,8 @@ public class SearchFragment extends Fragment {
     public static final String search_auto_url = "http://10.0.0.184/InventoryDB/SearchFragPHP/search_auto.php";
     public static final String search_manual_url = "http://10.0.0.184/InventoryDB/SearchFragPHP/search_manual.php";
 
-    private TextInputEditText upc_field, item_name_field, quantity_field;
+    private TextInputEditText upc_field, quantity_field;
+    private AutoCompleteTextView item_name_field;
     private Spinner location_field;
     private Button confirm_button_auto, confirm_button_manual, to_auto_search, to_manual_search;
     private ConstraintLayout manual_field, auto_field;
@@ -78,7 +86,7 @@ public class SearchFragment extends Fragment {
         more = v.findViewById(R.id.more_than);
         less = v.findViewById(R.id.less_than);
         equal = v.findViewById(R.id.exactly);
-        description =v.findViewById(R.id.description_radio);
+        description = v.findViewById(R.id.description_radio);
         quan_rad = v.findViewById(R.id.quantity_radio);
         loca_rad = v.findViewById(R.id.location_radio);
 
@@ -92,6 +100,29 @@ public class SearchFragment extends Fragment {
         // For the spinner
         location_field = v.findViewById(R.id.location_field);
         listView = v.findViewById(R.id.listview);
+
+        ///////////////////////////////////////////////////////////////
+        SQLiteDatabase useDb = MainActivity.db.getReadableDatabase();
+        final String [] itemNames;
+        ArrayList<String> array = new ArrayList<>();
+        String sql = "SELECT name FROM item_info";
+
+        Cursor cr = useDb.rawQuery(sql, null);
+        cr.moveToFirst();//cursor pointing to first row
+        itemNames = new String[cr.getCount()];//create array string based on numbers of row
+        int i=0;
+        do  {
+            itemNames[i] = cr.getString(0);//insert new stations to the array list
+            Log.i("ArrayList",itemNames[i]);
+            i++;
+        }while(cr.moveToNext());
+        //Finally Set the adapter to AutoCompleteTextView like this,
+        ArrayAdapter<String> autoAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line, itemNames);
+        //populate the list to the AutoCompleteTextView controls
+        item_name_field.setAdapter(autoAdapter);
+        autoAdapter.notifyDataSetChanged();
+        ///////////////////////////////////////////////////////////////
 
         locationSpinner();
 

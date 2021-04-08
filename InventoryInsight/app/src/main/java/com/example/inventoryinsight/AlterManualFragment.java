@@ -1,10 +1,18 @@
 package com.example.inventoryinsight;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.hardware.Camera;
+import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -13,6 +21,8 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.OrientationEventListener;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -39,6 +49,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,12 +61,13 @@ public class AlterManualFragment extends Fragment {
 
     public static final String add_quantity_manual = "http://10.0.0.184/InventoryDB/AddManFragPHP/add_quantity_manual.php";
 
+    //Camera take and cancel
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_IMAGE_CANCEL = 0;
 
-
+    // Variables
     private TextInputEditText upc_field, item_name_field, quantity_field;
-    private String quantity, name, barcode, location_id, select_location = "", encodedString;
+    private String quantity, name, barcode, location_id, select_location = "", encodedString = "";  //No image means empty string
     private MaterialTextView manual_title;
     private Spinner location_field;
     private Location clickedItem;
@@ -131,10 +144,11 @@ public class AlterManualFragment extends Fragment {
                     public void onResponse(JSONArray response) {
                         // Check for at least one item
                         try {
-                            Log.d("TETETE", String.valueOf(response));
+                            //Log.d("TETETE", String.valueOf(response));
                             // Get the response code for the update
                             JSONObject connect = response.getJSONObject(0);
 
+                            //Log.d("Response Check", String.valueOf(response));
                             // Only move the fragment if the update was successful
                             if (connect.getInt("result_code") == 200) {
                                 moveToAddFragment();
@@ -150,7 +164,7 @@ public class AlterManualFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 ((MainActivity)getActivity()).volleyRequestError();
                 confirm_button.setEnabled(true);
-                Log.d("eeeeeeeee", String.valueOf(error));
+                //Log.d("eeeeeeeee", String.valueOf(error));
             }
         });
         requestQueue.add(jsonObjReq);   // Add request to queue
@@ -184,6 +198,10 @@ public class AlterManualFragment extends Fragment {
 
         boolean missing_field = false;
         // Required fields that the user must select
+        if (name.equals("")) {
+            item_name_field.setError("An item name is required!");
+            missing_field = true;
+        }
         if (quantity.equals("")) {
             quantity_field.setError("An item quantity is required!");
             missing_field = true;
@@ -242,17 +260,57 @@ public class AlterManualFragment extends Fragment {
         return android.util.Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
     }
 
-    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode != REQUEST_IMAGE_CANCEL) {
             if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                    Bitmap takenImage = (Bitmap) data.getExtras().get("data");
-                    encodedString = encodeToBase64(takenImage, Bitmap.CompressFormat.PNG, 100);
+                Bitmap takenImage = (Bitmap) data.getExtras().get("data");
+                encodedString = encodeToBase64(takenImage, Bitmap.CompressFormat.PNG, 100);
 
-                    img_but.setAdjustViewBounds(true);
-                    img_but.setImageBitmap(takenImage);
+                // Rotates image correctly for front camera
+                //takenImage = MainActivity.rotateImage(takenImage, -90);
+
+                img_but.setAdjustViewBounds(true);
+                img_but.setImageBitmap(takenImage);
             }
         }
+    }
+
+    // Method for newer camera rotations
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    public Bitmap exifInterface(Bitmap takenImage) {
+
+        Uri tempUri = MainActivity.getImageUri(getActivity(), takenImage);
+        File finalFile = new File(MainActivity.getRealPathFromURI(tempUri));
+
+        ExifInterface ei = null;
+        try {
+            ei = new ExifInterface(finalFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED);
+
+        Bitmap rotatedBitmap;
+        switch (orientation) {
+
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                rotatedBitmap = MainActivity.rotateImage(takenImage, 90);
+                break;
+
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                rotatedBitmap = MainActivity.rotateImage(takenImage, 180);
+                break;
+
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                rotatedBitmap = MainActivity.rotateImage(takenImage, 270);
+                break;
+
+            case ExifInterface.ORIENTATION_NORMAL:
+            default:
+                rotatedBitmap = takenImage;
+        }
+        return rotatedBitmap;
     }
 }

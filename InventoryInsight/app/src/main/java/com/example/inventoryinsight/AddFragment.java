@@ -58,8 +58,6 @@ public class AddFragment extends Fragment {
         //Have to create the view first to use findViewByID in a fragment
         View v = inflater.inflate(R.layout.fragment_add, container, false);
 
-        HttpsTrustManager.allowAllSSL();
-
         upc_field = v.findViewById(R.id.upc_field);
         fill_button = v.findViewById(R.id.fill_button);
 
