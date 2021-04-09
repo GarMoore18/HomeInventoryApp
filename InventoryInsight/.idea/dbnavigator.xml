@@ -49,11 +49,11 @@
     <connection id="bc13d22b-297d-4644-bafd-c4b6b9bbfbe3" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-actions connection-id="bc13d22b-297d-4644-bafd-c4b6b9bbfbe3" dataset="main.item_info" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="bc13d22b-297d-4644-bafd-c4b6b9bbfbe3" dataset="main.user_access" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="9e613f18-8a93-4dbe-ad63-d28dbd0fb3d5" dataset="main.item_info" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="9e613f18-8a93-4dbe-ad63-d28dbd0fb3d5" dataset="main.combined_info" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="9e613f18-8a93-4dbe-ad63-d28dbd0fb3d5" dataset="main.user_access" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="bc13d22b-297d-4644-bafd-c4b6b9bbfbe3" dataset="main.item_info" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="bc13d22b-297d-4644-bafd-c4b6b9bbfbe3" dataset="main.user_access" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />

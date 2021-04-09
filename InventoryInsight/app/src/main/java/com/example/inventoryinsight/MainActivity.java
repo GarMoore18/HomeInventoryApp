@@ -422,6 +422,29 @@
             builder.show();
         }
 
+        // This will ask the user to confirm logging out
+        @Override
+        public void onBackPressed() {
+            logoutDialog();
+        }
+
+        public void logoutDialog() {
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Logout")
+                    .setMessage("Are you sure you want to logout?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        }
+
         // TODO: IN PROGRESS
         public void disableBack() {
             // This will not allow the user to return to previous screen once moving fragment
