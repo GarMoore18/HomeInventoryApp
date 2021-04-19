@@ -260,6 +260,7 @@ public class AlterManualFragment extends Fragment {
         return android.util.Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode != REQUEST_IMAGE_CANCEL) {
@@ -271,7 +272,7 @@ public class AlterManualFragment extends Fragment {
                 //takenImage = MainActivity.rotateImage(takenImage, -90);
 
                 img_but.setAdjustViewBounds(true);
-                img_but.setImageBitmap(takenImage);
+                img_but.setImageBitmap(exifInterface(takenImage));  // Works partially
             }
         }
     }

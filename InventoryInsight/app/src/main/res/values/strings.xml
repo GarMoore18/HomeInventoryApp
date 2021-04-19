@@ -34,7 +34,7 @@
     <string name="location_autofill">Basement Pantry</string>
 
     <!-- Settings -->
-    <string name="dark_mode_setting">Enable dark mode</string>
+    <string name="change_color">Change Color</string>
     <string name="logout_setting">Logout</string>
 
     <!-- Icon labels. -->

@@ -74,6 +74,7 @@
         }
 
         public static final int REQUEST_WRITE_STORAGE_REQUEST_CODE = 100;
+        public static int cTheme = 0;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +110,10 @@
             requestAppPermissions();
         }
 
+        public int getcTheme() {
+            return cTheme;
+        }
+
         public static Bitmap RotateBitmap(Bitmap source, float angle)
         {
             Matrix matrix = new Matrix();
@@ -120,7 +125,7 @@
         // THESE WILL WORK FOR VERSIONS ABOVE 8 (ORE0)
         //↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-        // TODO: THESE ARE METHODS THAT ARE ATTEMPTING TO ROTATE THE IMAGE CORRECTLY
+        // THESE ARE METHODS THAT ARE ATTEMPTING TO ROTATE THE IMAGE CORRECTLY
         public static Bitmap rotateImage(Bitmap source, float angle) {
             Matrix matrix = new Matrix();
             matrix.postRotate(angle);
@@ -128,7 +133,7 @@
                     matrix, true);
         }
 
-        // TODO: THESE ARE METHODS THAT ARE ATTEMPTING TO ROTATE THE IMAGE CORRECTLY
+        // THESE ARE METHODS THAT ARE ATTEMPTING TO ROTATE THE IMAGE CORRECTLY
         public static String getRealPathFromURI(Uri uri) {
             Cursor cursor = contextOfApplication.getContentResolver().query(uri, null, null, null, null);
             cursor.moveToFirst();
@@ -136,7 +141,7 @@
             return cursor.getString(idx);
         }
 
-        // TODO: THESE ARE METHODS THAT ARE ATTEMPTING TO ROTATE THE IMAGE CORRECTLY
+        // THESE ARE METHODS THAT ARE ATTEMPTING TO ROTATE THE IMAGE CORRECTLY
         public static Uri getImageUri(Context inContext, Bitmap inImage) {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -144,7 +149,7 @@
             return Uri.parse(path);
         }
 
-        // TODO: THESE ARE METHODS TO ALLOW FOR PROPER WRITE PERMISSIONS
+        // THESE ARE METHODS TO ALLOW FOR PROPER WRITE PERMISSIONS
         private void requestAppPermissions() {
 
             if (hasReadPermissions() && hasWritePermissions()) {
@@ -158,12 +163,12 @@
                     }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
         }
 
-        // TODO: THESE ARE METHODS TO ALLOW FOR PROPER WRITE PERMISSIONS
+        // THESE ARE METHODS TO ALLOW FOR PROPER WRITE PERMISSIONS
         private boolean hasReadPermissions() {
             return (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
         }
 
-        // TODO: THESE ARE METHODS TO ALLOW FOR PROPER WRITE PERMISSIONS
+        // THESE ARE METHODS TO ALLOW FOR PROPER WRITE PERMISSIONS
         private boolean hasWritePermissions() {
             return (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
         }

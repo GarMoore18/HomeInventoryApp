@@ -5,7 +5,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
@@ -59,23 +61,25 @@ public class LoginActivity extends AppCompatActivity {
                 username = user_name_input.getText().toString().trim();
                 password = user_pass_input.getText().toString().trim();
 
-                checkRequiredLogin();
-
                 Log.d("Testing", username + " " + password);
-                loginRequest();
-                user_name_input.setText("");
-                user_pass_input.setText("");
+                if (checkRequiredLogin()) {
+                    loginRequest();
+                }
             }
         });
     }
 
-    private void checkRequiredLogin() {
+    private boolean checkRequiredLogin() {
+        boolean need = true;
         if (username.equals("")) {
             user_name_input.setError("Username required");
+            need = false;
         }
         if (password.equals("")) {
             user_pass_input.setError("Password required");
+            need = false;
         }
+        return need;
     }
 
     public void showHidePassword(View view) {
@@ -111,18 +115,22 @@ public class LoginActivity extends AppCompatActivity {
                 if (arrOfStr.length == 1) {
                     if (arrOfStr[0].equals(String.valueOf('0'))) {
                         loginSuccess();
+                        user_name_input.setText("");
+                        user_pass_input.setText("");
                     } else {
-                        //TODO: MAKE ERROR DIALOG
-                        Log.d("Not found length 1", "The user could not be found");
+                        loginFailure();
+                        //Log.d("Not found length 1", "The user could not be found");
                     }
                 } else if (arrOfStr.length == 2) {
                     //Login successful
                     if (arrOfStr[1].equals(String.valueOf('0'))) {
                         loginSuccess();
+                        user_name_input.setText("");
+                        user_pass_input.setText("");
                     }
                     else {
-                        //TODO: MAKE ERROR DIALOG
-                        Log.d("Not found length 2", "The user could not be found");
+                        loginFailure();
+                        //Log.d("Not found length 2", "The user could not be found");
                     }
                 }
                 username = "";
@@ -146,13 +154,23 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginSuccess() {
-        //TODO: PASS USERNAME AND WELCOME USER
+        // Welcome user when the UI is redone
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
-    private void registerRequest() {
+    private void loginFailure() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
 
+        builder.setCancelable(false);
+        builder.setTitle("Invalid Credentials");
+        builder.setMessage("There is not a user that matches those credentials.");
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
     }
-
 }

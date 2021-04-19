@@ -22,13 +22,6 @@ public class CustomRequest extends JsonRequest<JSONArray> {
 
     protected static final String PROTOCOL_CHARSET = "utf-8";
 
-    public CustomRequest(int method, String url, String requestBody, Listener<JSONArray> listener, ErrorListener errorListener) {
-        super(method, url, requestBody, listener, errorListener);
-    }
-
-    public CustomRequest(String url, Listener<JSONArray> listener, ErrorListener errorListener) {
-        super(Method.GET, url, null, listener, errorListener);
-    }
 
     public CustomRequest(int method, String url, Listener<JSONArray> listener, ErrorListener errorListener) {
         super(method, url, null, listener, errorListener);
@@ -40,14 +33,6 @@ public class CustomRequest extends JsonRequest<JSONArray> {
 
     public CustomRequest(int method, String url, JSONObject jsonRequest, Listener<JSONArray> listener, ErrorListener errorListener) {
         super(method, url, (jsonRequest == null) ? null : jsonRequest.toString(), listener, errorListener);
-    }
-
-    public CustomRequest(String url, JSONArray jsonRequest, Listener<JSONArray> listener, ErrorListener errorListener) {
-        this(jsonRequest == null ? Method.GET : Method.POST, url, jsonRequest, listener, errorListener);
-    }
-
-    public CustomRequest(String url, JSONObject jsonRequest, Listener<JSONArray> listener, ErrorListener errorListener) {
-        this(jsonRequest == null ? Method.GET : Method.POST, url, jsonRequest, listener, errorListener);
     }
 
     @Override

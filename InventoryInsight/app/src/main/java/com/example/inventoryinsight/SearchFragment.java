@@ -46,6 +46,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -68,6 +70,8 @@ public class SearchFragment extends Fragment {
     private RadioGroup radioGroupQuan, radioGroupSelection;
     private RadioButton more, less, equal, description, quan_rad, loca_rad, curr;
     private final String moreText = "More than: ", lessText = "Less than: ", equalText = "Exactly: ";
+
+    private ArrayList<String> itemNames;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -101,28 +105,9 @@ public class SearchFragment extends Fragment {
         location_field = v.findViewById(R.id.location_field);
         listView = v.findViewById(R.id.listview);
 
-        ///////////////////////////////////////////////////////////////
-        SQLiteDatabase useDb = MainActivity.db.getReadableDatabase();
-        final String [] itemNames;
-        ArrayList<String> array = new ArrayList<>();
-        String sql = "SELECT name FROM item_info";
-
-        Cursor cr = useDb.rawQuery(sql, null);
-        cr.moveToFirst();//cursor pointing to first row
-        itemNames = new String[cr.getCount()];//create array string based on numbers of row
-        int i=0;
-        do  {
-            itemNames[i] = cr.getString(0);//insert new stations to the array list
-            Log.i("ArrayList",itemNames[i]);
-            i++;
-        }while(cr.moveToNext());
-        //Finally Set the adapter to AutoCompleteTextView like this,
-        ArrayAdapter<String> autoAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_dropdown_item_1line, itemNames);
-        //populate the list to the AutoCompleteTextView controls
-        item_name_field.setAdapter(autoAdapter);
-        autoAdapter.notifyDataSetChanged();
-        ///////////////////////////////////////////////////////////////
+        // For autocomplete field
+        getNamesFromDB();
+        setAutoTextWatcher();  // For autocomplete description
 
         locationSpinner();
 
@@ -173,6 +158,54 @@ public class SearchFragment extends Fragment {
         cameraScanEvent(v.findViewById(R.id.scan_image_button));
 
         return v;   //Returning the view for the fragment
+    }
+
+    private void getNamesFromDB() {
+        SQLiteDatabase useDb = MainActivity.db.getReadableDatabase();
+        //final String [] itemNames;
+        itemNames = new ArrayList<>();
+        String sql = "SELECT name FROM item_info";
+
+        Cursor cr = useDb.rawQuery(sql, null);
+        cr.moveToFirst();//cursor pointing to first row
+        //itemNames = new String[cr.getCount()];//create array string based on numbers of row
+        int i = 0;
+        do {
+            itemNames.add(cr.getString(0));//insert new stations to the array list
+            i++;
+        } while(cr.moveToNext());
+        Log.i("ArrayList", String.valueOf(itemNames));
+    }
+
+    private void setAutoTextWatcher() {
+        item_name_field.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String enteredText = item_name_field.getText().toString();
+
+                ArrayList<String> closeNames = new ArrayList<>();
+                for(String listItem : itemNames){
+                    if(listItem.contains(enteredText)){
+                        closeNames.add(listItem);
+                        //Log.d("HEYO", listItem);
+                    }
+                }
+
+                // Set the adapter for the Autocomplete and notify
+                ArrayAdapter<String> autoAdapter = new ArrayAdapter<String>(getActivity(),
+                        android.R.layout.simple_dropdown_item_1line, closeNames);
+                item_name_field.setAdapter(autoAdapter);
+                autoAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     //================================================================================

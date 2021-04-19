@@ -20,7 +20,7 @@
         android:textSize="35sp" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/dark_mode_toggle"
+        android:id="@+id/color_toggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/settings_screen_text"
@@ -29,7 +29,7 @@
         app:switchPadding="10dp"
         app:switchMinWidth="56dp"
 
-        android:text="@string/dark_mode_setting"
+        android:text="@string/change_color"
         android:textSize="25sp" />
 
     <com.google.android.material.button.MaterialButton
