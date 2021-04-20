@@ -38,10 +38,10 @@ import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static final String login = "http://10.0.0.184/InventoryDB/Test/passwordHashing.php";
+    public static final String login = "http://10.0.0.184/InventoryDB/Login/passwordHashing.php";
 
     private EditText user_name_input, user_pass_input;
-    private Button login_but;
+    private Button login_but, register_btn;
     private String username, password;
 
     @Override
@@ -54,7 +54,29 @@ public class LoginActivity extends AppCompatActivity {
         user_pass_input = findViewById(R.id.user_pass);
 
         login_but = findViewById(R.id.login);
+        register_btn = findViewById(R.id.register);
 
+
+        loginOnClick();
+        registerOnClick();
+    }
+
+    private void startIntentRegister() {
+        // Welcome user when the UI is redone
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+    }
+
+    private void registerOnClick() {
+        register_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startIntentRegister();
+            }
+        });
+    }
+
+    private void loginOnClick() {
         login_but.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

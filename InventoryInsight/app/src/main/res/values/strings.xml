@@ -50,8 +50,11 @@
     <!-- Login Screen -->
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
-            <string name="show_hide">Show and hide password</string>
+    <string name="show_hide">Show and hide password</string>
 
+    <!-- RegisterActivity -->
+    <string name="register_title">Register</string>
+    <string name="submit">Submit</string>
 
     <string name="action_sign_in">Login or register</string>
     <string name="action_sign_in_short">Login</string>

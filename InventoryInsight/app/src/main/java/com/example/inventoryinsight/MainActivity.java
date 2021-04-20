@@ -63,7 +63,7 @@
             implements BottomNavigationView.OnNavigationItemSelectedListener {
 
         public static final String select_locations_URL = "http://10.0.0.184/InventoryDB/MainActPHP/select_possible_locations.php";
-        public static final String sqlite_filler = "http://10.0.0.184/InventoryDB/Test/sqliteRequest.php";
+        public static final String sqlite_filler = "http://10.0.0.184/InventoryDB/SQLite/sqliteRequest.php";
 
         public static DatabaseHelper db;
 
