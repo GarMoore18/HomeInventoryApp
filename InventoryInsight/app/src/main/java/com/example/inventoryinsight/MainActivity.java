@@ -110,6 +110,7 @@
             requestAppPermissions();
         }
 
+        // These are tests for changing the theme
         public int getcTheme() {
             return cTheme;
         }
