@@ -1,9 +1,9 @@
 # HomeInventoryApp
 ## Login, Register, and Home
 ### The user will be prompted to login (first iamge) or register (second image). Upon providing a valid login, the user will see the home screen of the most recently altered items (last image).  
-<img src="https://user-images.githubusercontent.com/62194724/116594141-e6565600-a8ef-11eb-9c5c-74f1ac4d97f6.png" width=250 align=center>
+<img src="https://user-images.githubusercontent.com/62194724/116594141-e6565600-a8ef-11eb-9c5c-74f1ac4d97f6.png" width=250 align=left>
 <img src="https://user-images.githubusercontent.com/62194724/116594158-e7878300-a8ef-11eb-8964-c4d37e812499.png" width=250 align=center>
-<img src="https://user-images.githubusercontent.com/62194724/116594159-e7878300-a8ef-11eb-937a-a5a521ef6cf2.png" width=250 align=center>  
+<img src="https://user-images.githubusercontent.com/62194724/116594159-e7878300-a8ef-11eb-937a-a5a521ef6cf2.png" width=250 align=right>  
 
 ## Adding Items
 ### The user will have the ability to add new items (second image) or can add to items that are already in the database (last image). To get to either of those screens, the user will use the add item screen (first image) and enter a barcode. The barcode image can be used to scan an item or the barcode can be entered manually.  
