@@ -1,5 +1,6 @@
 # HomeInventoryApp
 Android application for project 2
+<img src="https://user-images.githubusercontent.com/62194724/116594141-e6565600-a8ef-11eb-9c5c-74f1ac4d97f6.png" width=300 align=right>
 ![Screenshot_1619717182](https://user-images.githubusercontent.com/62194724/116594141-e6565600-a8ef-11eb-9c5c-74f1ac4d97f6.png)
 ![Screenshot_1619717299](https://user-images.githubusercontent.com/62194724/116594144-e6565600-a8ef-11eb-9f02-2995f6ba6af8.png)
 ![Screenshot_1619717332](https://user-images.githubusercontent.com/62194724/116594146-e6565600-a8ef-11eb-97cb-6ce2f971a30f.png)
