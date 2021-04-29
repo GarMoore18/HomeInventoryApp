@@ -1,4 +1,4 @@
-# HomeInventoryApp
+# Inventory Insight Overview
 ## Login, Register, and Home
 ### The user will be prompted to login (first iamge) or register (second image). Upon providing a valid login, the user will see the home screen of the most recently altered items (last image).  
 <img src="https://user-images.githubusercontent.com/62194724/116594141-e6565600-a8ef-11eb-9c5c-74f1ac4d97f6.png" width=250 align=left>
