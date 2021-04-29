@@ -18,7 +18,7 @@
 <img src="https://user-images.githubusercontent.com/62194724/116594162-e7878300-a8ef-11eb-8d3e-dc17c4a11e9d.png" width=315 align=center>  
 
 ## Searching Items
-### The user will have the ability to search auto (first image) or can search maually by description, quantity, or location (last image). To get to either of those screens, the user will use the buttons to switch between the search type. Upon searching, the user will see a list of all matching items, similar to the home screen list.  
+### The user will have the ability to search auto (first image) or can search maually by description, quantity, or location (second image). To get to either of those screens, the user will use the buttons to switch between the search type. Upon searching, the user will see a list of all matching items (last image), similar to the home screen list.  
 <img src="https://user-images.githubusercontent.com/62194724/116594148-e6565600-a8ef-11eb-9e5d-c9a3bc3498f9.png" width=315 align=left>
 <img src="https://user-images.githubusercontent.com/62194724/116594151-e6565600-a8ef-11eb-938b-168333725da0.png" width=315 align=left>
 <img src="https://user-images.githubusercontent.com/62194724/116594156-e6eeec80-a8ef-11eb-9bc6-eb4e73f8cc8b.png" width=315 align=center>  
