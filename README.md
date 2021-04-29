@@ -1,4 +1,5 @@
 # HomeInventoryApp
+<pre>
 ## Login, Register, and Home
 ### The user will be prompted to login (first iamge) or register (second image). Upon providing a valid login, the user will see the home screen of the most recently altered items (last image).  
 <img src="https://user-images.githubusercontent.com/62194724/116594141-e6565600-a8ef-11eb-9c5c-74f1ac4d97f6.png" width=315 align=left>
@@ -25,3 +26,5 @@
 <img src="https://user-images.githubusercontent.com/62194724/116594148-e6565600-a8ef-11eb-9e5d-c9a3bc3498f9.png" width=315 align=left>
 <img src="https://user-images.githubusercontent.com/62194724/116594151-e6565600-a8ef-11eb-938b-168333725da0.png" width=315 align=left>
 <img src="https://user-images.githubusercontent.com/62194724/116594156-e6eeec80-a8ef-11eb-9bc6-eb4e73f8cc8b.png" width=315 align=left>  
+
+</pre>
